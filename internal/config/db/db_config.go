@@ -1,13 +1,14 @@
 package config
 
 import (
+	configInterface "auth/internal/config/interface"
 	"fmt"
 	"os"
 
 	"github.com/pkg/errors"
 )
 
-//var _ config.DbConfig = (*DbConfig)(nil)
+var _ configInterface.DatabaseConfig = (*dbConfig)(nil)
 
 const (
 	port         = "DB_PORT"
@@ -19,71 +20,71 @@ const (
 	databaseName = "DB_NAME"
 )
 
-type DbConfig struct {
-	Port         string
-	Host         string
-	Driver       string
-	User         string
-	Password     string
-	SslMode      string
-	DatabaseName string
+type dbConfig struct {
+	port         string
+	host         string
+	driver       string
+	user         string
+	password     string
+	sslMode      string
+	databaseName string
 }
 
-func NewDbConfig() (*DbConfig, error) {
+func NewDbConfig() (configInterface.DatabaseConfig, error) {
 	port := os.Getenv(port)
 	if len(port) == 0 {
-		return nil, errors.New("db Port not found")
+		return nil, errors.New("db port not found")
 	}
 
 	host := os.Getenv(host)
 	if len(host) == 0 {
-		return nil, errors.New("db Host not found")
+		return nil, errors.New("db host not found")
 	}
 
 	driver := os.Getenv(driver)
 	if len(driver) == 0 {
-		return nil, errors.New("db Driver not found")
+		return nil, errors.New("db driver not found")
 	}
 
 	user := os.Getenv(user)
 	if len(user) == 0 {
-		return nil, errors.New("db User not found")
+		return nil, errors.New("db user not found")
 	}
 
 	password := os.Getenv(password)
 	if len(password) == 0 {
-		return nil, errors.New("db Password not found")
+		return nil, errors.New("db password not found")
 	}
 
 	sslMode := os.Getenv(sslMode)
 	if len(sslMode) == 0 {
-		return nil, errors.New("db SslMode not found")
+		return nil, errors.New("db sslMode not found")
 	}
 
 	databaseName := os.Getenv(databaseName)
 	if len(databaseName) == 0 {
-		return nil, errors.New("db DatabaseName not found")
+		return nil, errors.New("db databaseName not found")
 	}
 
-	return &DbConfig{
-		Host:         host,
-		Port:         port,
-		Driver:       driver,
-		User:         user,
-		Password:     password,
-		SslMode:      sslMode,
-		DatabaseName: databaseName,
+	return &dbConfig{
+		host:         host,
+		port:         port,
+		driver:       driver,
+		user:         user,
+		password:     password,
+		sslMode:      sslMode,
+		databaseName: databaseName,
 	}, nil
 }
 
-func (cfg *DbConfig) ConnectString() string {
+func (s *dbConfig) ConnectString() string {
 	return fmt.Sprintf(
 		"host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
-		cfg.Host,
-		cfg.Port,
-		cfg.User,
-		cfg.Password,
-		cfg.DatabaseName,
-		cfg.SslMode,
+		s.host,
+		s.port,
+		s.user,
+		s.password,
+		s.databaseName,
+		s.sslMode,
 	)
 }

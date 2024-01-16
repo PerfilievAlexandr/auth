@@ -1,12 +1,13 @@
 package config
 
 import (
+	configInterface "auth/internal/config/interface"
 	"errors"
 	"net"
 	"os"
 )
 
-//var _ config.GRPCConfig = (*grpcConfig)(nil)
+var _ configInterface.GrpcServerConfig = (*grpcConfig)(nil)
 
 const (
 	grpcHostEnvName = "GRPC_HOST"
@@ -18,7 +19,7 @@ type grpcConfig struct {
 	port string
 }
 
-func NewGRPCConfig() (*grpcConfig, error) {
+func NewGRPCConfig() (configInterface.GrpcServerConfig, error) {
 	host := os.Getenv(grpcHostEnvName)
 	if len(host) == 0 {
 		return nil, errors.New("grpc host not found")

@@ -1,23 +1,24 @@
 package config
 
 import (
-	db1Config "auth/internal/config/db"
-	grpc1Config "auth/internal/config/grpc"
+	dbConfig "auth/internal/config/db"
+	grpcConfig "auth/internal/config/grpc"
+	configInterface "auth/internal/config/interface"
 	"github.com/joho/godotenv"
 	"log"
 )
 
 type Config struct {
-	GRPCConfig grpcConfig
-	DbConfig   dbConfig
+	GRPCConfig configInterface.GrpcServerConfig
+	DbConfig   configInterface.DatabaseConfig
 }
 
 func NewConfig() (*Config, error) {
-	dbCfg, err := db1Config.NewDbConfig()
+	dbCfg, err := dbConfig.NewDbConfig()
 	if err != nil {
 		log.Fatalf("failed to config: %s", err.Error())
 	}
-	grpcCfg, err := grpc1Config.NewGRPCConfig()
+	grpcCfg, err := grpcConfig.NewGRPCConfig()
 	if err != nil {
 		log.Fatalf("failed to config: %s", err.Error())
 	}
@@ -35,12 +36,4 @@ func Load(path string) error {
 	}
 
 	return nil
-}
-
-type grpcConfig interface {
-	Address() string
-}
-
-type dbConfig interface {
-	ConnectString() string
 }
