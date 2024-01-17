@@ -1,6 +1,7 @@
 package app
 
 import (
+	"auth/internal/closer"
 	"auth/internal/config"
 	proto "auth/pkg/user_v1"
 	"context"
@@ -28,6 +29,11 @@ func NewApp(ctx context.Context) (*App, error) {
 }
 
 func (a *App) Run() error {
+	defer func() {
+		closer.CloseAll()
+		closer.Wait()
+	}()
+
 	return a.runGRPCServer()
 }
 

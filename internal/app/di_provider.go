@@ -2,6 +2,7 @@ package app
 
 import (
 	"auth/internal/api/grpc/user"
+	"auth/internal/closer"
 	"auth/internal/config"
 	"auth/internal/repository"
 	userRepository "auth/internal/repository/user"
@@ -48,6 +49,11 @@ func (s *diProvider) PgxPool(ctx context.Context) *pgxpool.Pool {
 		if err != nil {
 			log.Fatalf("failed to connect to database: %v", err)
 		}
+
+		closer.Add(func() error {
+			pool.Close()
+			return nil
+		})
 
 		s.db = pool
 	}
