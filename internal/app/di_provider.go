@@ -2,6 +2,8 @@ package app
 
 import (
 	"auth/internal/api/grpc/user"
+	"auth/internal/client/db"
+	"auth/internal/client/db/pg"
 	"auth/internal/closer"
 	"auth/internal/config"
 	"auth/internal/repository"
@@ -9,13 +11,12 @@ import (
 	"auth/internal/service"
 	userService "auth/internal/service/user"
 	"context"
-	"github.com/jackc/pgx/v4/pgxpool"
 	"log"
 )
 
 type diProvider struct {
 	config         *config.Config
-	db             *pgxpool.Pool
+	db             db.Client
 	userRepository repository.UserRepository
 	userService    service.UserService
 	server         *user.Server
@@ -38,24 +39,25 @@ func (s *diProvider) Config() *config.Config {
 	return s.config
 }
 
-func (s *diProvider) PgxPool(ctx context.Context) *pgxpool.Pool {
+func (s *diProvider) DbClient(ctx context.Context) db.Client {
 	if s.db == nil {
-		pool, err := pgxpool.Connect(ctx, s.config.DbConfig.ConnectString())
+
+		dbPool, err := pg.New(ctx, s.config.DbConfig.ConnectString())
 		if err != nil {
 			log.Fatalf("failed to connect to database: %v", err)
 		}
 
-		err = pool.Ping(ctx)
+		err = dbPool.Ping(ctx)
 		if err != nil {
 			log.Fatalf("failed to connect to database: %v", err)
 		}
 
 		closer.Add(func() error {
-			pool.Close()
+			dbPool.Close()
 			return nil
 		})
 
-		s.db = pool
+		s.db = dbPool
 	}
 
 	return s.db
@@ -63,7 +65,7 @@ func (s *diProvider) PgxPool(ctx context.Context) *pgxpool.Pool {
 
 func (s *diProvider) UserRepository(ctx context.Context) repository.UserRepository {
 	if s.userRepository == nil {
-		s.userRepository = userRepository.NewRepository(s.PgxPool(ctx))
+		s.userRepository = userRepository.NewRepository(s.DbClient(ctx))
 	}
 
 	return s.userRepository

@@ -2,29 +2,29 @@ package user
 
 import (
 	apiDto "auth/internal/api/grpc/user/dto"
+	"auth/internal/client/db"
 	"auth/internal/domain"
 	"auth/internal/repository"
 	"auth/internal/repository/user/dto"
 	"auth/internal/repository/user/mapper"
 	"context"
 	"fmt"
-	"github.com/jackc/pgx/v4/pgxpool"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"time"
 )
 
 type repo struct {
-	db *pgxpool.Pool
+	db db.Client
 }
 
-func NewRepository(db *pgxpool.Pool) repository.UserRepository {
+func NewRepository(db db.Client) repository.UserRepository {
 	return &repo{db: db}
 }
 
 func (s *repo) Create(ctx context.Context, req *apiDto.CreateRequest) (int64, error) {
 	var userId int64
-	createUserQuery := fmt.Sprintf("INSERT INTO users (name, email, password, role, created_at) values ($1, $2, $3, $4, $5) RETURNING id")
-	err := s.db.QueryRow(ctx, createUserQuery, req.Name, req.Email, req.Password, req.Role, time.Now()).Scan(&userId)
+	query := fmt.Sprintf("INSERT INTO users (name, email, password, role, created_at) values ($1, $2, $3, $4, $5) RETURNING id")
+	err := s.db.ScanOneContext(ctx, &userId, query, req.Name, req.Email, req.Password, req.Role, time.Now())
 	if err != nil {
 		return 0, err
 	}
@@ -34,10 +34,8 @@ func (s *repo) Create(ctx context.Context, req *apiDto.CreateRequest) (int64, er
 
 func (s *repo) Get(ctx context.Context, userId int64) (*domain.User, error) {
 	query := fmt.Sprintf(`SELECT s.id, s.name, s.email, s.role, s.created_at, s.updated_at FROM users s WHERE s.id = $1`)
-	row := s.db.QueryRow(ctx, query, userId)
-
 	var dbUser = dto.UserDb{}
-	err := row.Scan(&dbUser.Id, &dbUser.Name, &dbUser.Email, &dbUser.Role, &dbUser.CreatedAt, &dbUser.UpdatedAt)
+	err := s.db.ScanOneContext(ctx, &dbUser, query, userId)
 	if err != nil {
 		return nil, err
 	}
@@ -46,8 +44,8 @@ func (s *repo) Get(ctx context.Context, userId int64) (*domain.User, error) {
 }
 
 func (s *repo) Update(ctx context.Context, req *apiDto.UpdateRequest) (*emptypb.Empty, error) {
-	updateUserQuery := fmt.Sprintf("UPDATE users SET name=$2, email=$3, updated_at=$4 WHERE id=$1")
-	_, err := s.db.Exec(ctx, updateUserQuery, req.Id, req.Name, req.Email, time.Now())
+	query := fmt.Sprintf("UPDATE users SET name=$2, email=$3, updated_at=$4 WHERE id=$1")
+	_, err := s.db.ExecContext(ctx, query, req.Id, req.Name, req.Email, time.Now())
 	if err != nil {
 		return nil, err
 	}
@@ -56,8 +54,8 @@ func (s *repo) Update(ctx context.Context, req *apiDto.UpdateRequest) (*emptypb.
 }
 
 func (s *repo) Delete(ctx context.Context, userId int64) (*emptypb.Empty, error) {
-	deleteUserQuery := fmt.Sprintf("DELETE FROM users WHERE id=$1")
-	_, err := s.db.Exec(ctx, deleteUserQuery, userId)
+	query := fmt.Sprintf("DELETE FROM users WHERE id=$1")
+	_, err := s.db.ExecContext(ctx, query, userId)
 	if err != nil {
 		return nil, err
 	}
