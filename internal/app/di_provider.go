@@ -4,6 +4,7 @@ import (
 	"auth/internal/api/grpc/user"
 	"auth/internal/client/db"
 	"auth/internal/client/db/pg"
+	"auth/internal/client/db/transaction"
 	"auth/internal/closer"
 	"auth/internal/config"
 	"auth/internal/repository"
@@ -17,6 +18,7 @@ import (
 type diProvider struct {
 	config         *config.Config
 	db             db.Client
+	txManager      db.TxManager
 	userRepository repository.UserRepository
 	userService    service.UserService
 	server         *user.Server
@@ -63,6 +65,14 @@ func (s *diProvider) DbClient(ctx context.Context) db.Client {
 	return s.db
 }
 
+func (s *diProvider) TxManager(ctx context.Context) db.TxManager {
+	if s.txManager == nil {
+		s.txManager = transaction.NewTransactionManager(s.DbClient(ctx))
+	}
+
+	return s.txManager
+}
+
 func (s *diProvider) UserRepository(ctx context.Context) repository.UserRepository {
 	if s.userRepository == nil {
 		s.userRepository = userRepository.NewRepository(s.DbClient(ctx))
@@ -73,7 +83,10 @@ func (s *diProvider) UserRepository(ctx context.Context) repository.UserReposito
 
 func (s *diProvider) UserService(ctx context.Context) repository.UserRepository {
 	if s.userService == nil {
-		s.userService = userService.NewUserService(s.UserRepository(ctx))
+		s.userService = userService.NewUserService(
+			s.UserRepository(ctx),
+			s.TxManager(ctx),
+		)
 	}
 
 	return s.userService

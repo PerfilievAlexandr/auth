@@ -2,6 +2,7 @@ package pg
 
 import (
 	"auth/internal/client/db"
+	"auth/internal/client/db/transaction"
 	"context"
 	"github.com/georgysavva/scany/pgxscan"
 	"github.com/jackc/pgconn"
@@ -23,6 +24,10 @@ func New(ctx context.Context, connectStr string) (db.Client, error) {
 	return &pg{dbc}, nil
 }
 
+func (p *pg) BeginTx(ctx context.Context, txOptions pgx.TxOptions) (pgx.Tx, error) {
+	return p.dbc.BeginTx(ctx, txOptions)
+}
+
 func (p *pg) ScanOneContext(ctx context.Context, dest interface{}, query string, args ...interface{}) error {
 	row, err := p.QueryContext(ctx, query, args...)
 	if err != nil {
@@ -42,14 +47,29 @@ func (p *pg) ScanAllContext(ctx context.Context, dest interface{}, query string,
 }
 
 func (p *pg) ExecContext(ctx context.Context, query string, args ...interface{}) (pgconn.CommandTag, error) {
+	tx, ok := ctx.Value(transaction.TxKey).(pgx.Tx)
+	if ok {
+		return tx.Exec(ctx, query, args...)
+	}
+
 	return p.dbc.Exec(ctx, query, args...)
 }
 
 func (p *pg) QueryContext(ctx context.Context, query string, args ...interface{}) (pgx.Rows, error) {
+	tx, ok := ctx.Value(transaction.TxKey).(pgx.Tx)
+	if ok {
+		return tx.Query(ctx, query, args...)
+	}
+
 	return p.dbc.Query(ctx, query, args...)
 }
 
 func (p *pg) QueryRowContext(ctx context.Context, query string, args ...interface{}) pgx.Row {
+	tx, ok := ctx.Value(transaction.TxKey).(pgx.Tx)
+	if ok {
+		return tx.QueryRow(ctx, query, args...)
+	}
+
 	return p.dbc.QueryRow(ctx, query, args...)
 }
 

@@ -2,6 +2,7 @@ package user
 
 import (
 	"auth/internal/api/grpc/user/dto"
+	"auth/internal/client/db"
 	"auth/internal/domain"
 	"auth/internal/repository"
 	"auth/internal/service"
@@ -11,11 +12,13 @@ import (
 
 type userService struct {
 	userRepository repository.UserRepository
+	txManager      db.TxManager
 }
 
-func NewUserService(userRepository repository.UserRepository) service.UserService {
+func NewUserService(userRepository repository.UserRepository, txManager db.TxManager) service.UserService {
 	return &userService{
 		userRepository: userRepository,
+		txManager:      txManager,
 	}
 }
 
