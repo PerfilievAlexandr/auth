@@ -28,13 +28,13 @@ func NewApp(ctx context.Context) (*App, error) {
 	return a, nil
 }
 
-func (a *App) Run() error {
+func (a *App) Run(ctx context.Context) error {
 	defer func() {
 		closer.CloseAll()
 		closer.Wait()
 	}()
 
-	return a.runGRPCServer()
+	return a.runGRPCServer(ctx)
 }
 
 func (a *App) initDeps(ctx context.Context) error {
@@ -65,7 +65,6 @@ func (a *App) initConfig(_ context.Context) error {
 
 func (a *App) initProvider(_ context.Context) error {
 	a.diProvider = newProvider()
-	a.diProvider.Config()
 	return nil
 }
 
@@ -79,10 +78,10 @@ func (a *App) initGRPCServer(ctx context.Context) error {
 	return nil
 }
 
-func (a *App) runGRPCServer() error {
-	log.Printf("GRPC server is running on %s", a.diProvider.Config().GRPCConfig.Address())
+func (a *App) runGRPCServer(ctx context.Context) error {
+	log.Printf("GRPC server is running on %s", a.diProvider.Config(ctx).GRPCConfig.Address())
 
-	list, err := net.Listen("tcp", a.diProvider.Config().GRPCConfig.Address())
+	list, err := net.Listen("tcp", a.diProvider.Config(ctx).GRPCConfig.Address())
 	if err != nil {
 		return err
 	}

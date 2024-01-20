@@ -28,9 +28,9 @@ func newProvider() *diProvider {
 	return &diProvider{}
 }
 
-func (s *diProvider) Config() *config.Config {
+func (s *diProvider) Config(ctx context.Context) *config.Config {
 	if s.config == nil {
-		cfg, err := config.NewConfig()
+		cfg, err := config.NewConfig(ctx)
 		if err != nil {
 			log.Fatalf("failed to get pg config: %s", err.Error())
 		}
@@ -44,7 +44,7 @@ func (s *diProvider) Config() *config.Config {
 func (s *diProvider) DbClient(ctx context.Context) db.Client {
 	if s.db == nil {
 
-		dbPool, err := pg.New(ctx, s.config.DbConfig.ConnectString())
+		dbPool, err := pg.New(ctx, s.Config(ctx).DbConfig.ConnectString())
 		if err != nil {
 			log.Fatalf("failed to connect to database: %v", err)
 		}

@@ -4,6 +4,7 @@ import (
 	dbConfig "auth/internal/config/db"
 	grpcConfig "auth/internal/config/grpc"
 	configInterface "auth/internal/config/interface"
+	"context"
 	"github.com/joho/godotenv"
 	"log"
 )
@@ -13,7 +14,7 @@ type Config struct {
 	DbConfig   configInterface.DatabaseConfig
 }
 
-func NewConfig() (*Config, error) {
+func NewConfig(_ context.Context) (*Config, error) {
 	dbCfg, err := dbConfig.NewDbConfig()
 	if err != nil {
 		log.Fatalf("failed to config: %s", err.Error())
