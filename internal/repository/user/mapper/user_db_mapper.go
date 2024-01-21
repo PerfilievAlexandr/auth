@@ -1,8 +1,8 @@
 package mapper
 
 import (
-	"auth/internal/domain"
-	dbUser "auth/internal/repository/user/dto"
+	"github.com/PerfilievAlexandr/auth/internal/domain"
+	dbUser "github.com/PerfilievAlexandr/auth/internal/repository/user/dto"
 )
 
 func ToUserFromUserDb(userDb *dbUser.UserDb) *domain.User {

@@ -1,10 +1,10 @@
 package user
 
 import (
-	"auth/internal/api/grpc/user/mapper"
-	"auth/internal/service"
-	proto "auth/pkg/user_v1"
 	"context"
+	"github.com/PerfilievAlexandr/auth/internal/api/grpc/user/mapper"
+	"github.com/PerfilievAlexandr/auth/internal/service"
+	proto "github.com/PerfilievAlexandr/auth/pkg/user_v1"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
@@ -19,7 +19,7 @@ func NewImplementation(userService service.UserService) *Server {
 	}
 }
 
-func (s *Server) Create(ctx context.Context, req *proto.CreteRequest) (*proto.CreateResponse, error) {
+func (s *Server) Create(ctx context.Context, req *proto.CreateRequest) (*proto.CreateResponse, error) {
 	userId, err := s.userService.Create(ctx, mapper.MapToCreateUser(req))
 
 	if err != nil {

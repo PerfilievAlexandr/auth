@@ -2,16 +2,16 @@
 
 package mocks
 
-//go:generate minimock -i auth/internal/service.UserService -o user_service_minimock.go -n UserServiceMock -p mocks
+//go:generate minimock -i github.com/PerfilievAlexandr/auth/internal/service.UserService -o user_service_minimock.go -n UserServiceMock -p mocks
 
 import (
-	"auth/internal/api/grpc/user/dto"
-	"auth/internal/domain"
 	"context"
 	"sync"
 	mm_atomic "sync/atomic"
 	mm_time "time"
 
+	"github.com/PerfilievAlexandr/auth/internal/api/grpc/user/dto"
+	"github.com/PerfilievAlexandr/auth/internal/domain"
 	"github.com/gojuno/minimock/v3"
 	"google.golang.org/protobuf/types/known/emptypb"
 )

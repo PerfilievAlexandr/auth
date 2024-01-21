@@ -1,12 +1,12 @@
 package user
 
 import (
-	"auth/internal/api/grpc/user/dto"
-	"auth/internal/client/db"
-	"auth/internal/domain"
-	"auth/internal/repository"
-	"auth/internal/service"
 	"context"
+	"github.com/PerfilievAlexandr/auth/internal/api/grpc/user/dto"
+	"github.com/PerfilievAlexandr/auth/internal/domain"
+	"github.com/PerfilievAlexandr/auth/internal/repository"
+	"github.com/PerfilievAlexandr/auth/internal/service"
+	"github.com/PerfilievAlexandr/platform_common/pkg/db"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 

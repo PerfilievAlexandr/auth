@@ -1,13 +1,13 @@
 package tests
 
 import (
-	"auth/internal/api/grpc/user"
-	"auth/internal/api/grpc/user/dto"
-	"auth/internal/service"
-	serviceMocks "auth/internal/service/mocks"
-	proto "auth/pkg/user_v1"
 	"context"
 	"fmt"
+	"github.com/PerfilievAlexandr/auth/internal/api/grpc/user"
+	"github.com/PerfilievAlexandr/auth/internal/api/grpc/user/dto"
+	"github.com/PerfilievAlexandr/auth/internal/service"
+	serviceMocks "github.com/PerfilievAlexandr/auth/internal/service/mocks"
+	proto "github.com/PerfilievAlexandr/auth/pkg/user_v1"
 	"github.com/gojuno/minimock/v3"
 	"github.com/stretchr/testify/require"
 	"testing"
@@ -19,7 +19,7 @@ func TestCreate(t *testing.T) {
 
 	type args struct {
 		ctx context.Context
-		req *proto.CreteRequest
+		req *proto.CreateRequest
 	}
 
 	var (
@@ -35,7 +35,7 @@ func TestCreate(t *testing.T) {
 
 		serviceErr = fmt.Errorf("service error")
 
-		req = &proto.CreteRequest{
+		req = &proto.CreateRequest{
 			Name:            name,
 			Email:           email,
 			Password:        password,

@@ -1,8 +1,8 @@
 package config
 
 import (
-	configInterface "auth/internal/config/interface"
 	"errors"
+	configInterface "github.com/PerfilievAlexandr/auth/internal/config/interface"
 	"net"
 	"os"
 )

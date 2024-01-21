@@ -23,7 +23,7 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UserV1Client interface {
-	Create(ctx context.Context, in *CreteRequest, opts ...grpc.CallOption) (*CreateResponse, error)
+	Create(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*CreateResponse, error)
 	Get(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetResponse, error)
 	Update(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	Delete(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
@@ -37,7 +37,7 @@ func NewUserV1Client(cc grpc.ClientConnInterface) UserV1Client {
 	return &userV1Client{cc}
 }
 
-func (c *userV1Client) Create(ctx context.Context, in *CreteRequest, opts ...grpc.CallOption) (*CreateResponse, error) {
+func (c *userV1Client) Create(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*CreateResponse, error) {
 	out := new(CreateResponse)
 	err := c.cc.Invoke(ctx, "/note_v1.UserV1/Create", in, out, opts...)
 	if err != nil {
@@ -77,7 +77,7 @@ func (c *userV1Client) Delete(ctx context.Context, in *DeleteRequest, opts ...gr
 // All implementations must embed UnimplementedUserV1Server
 // for forward compatibility
 type UserV1Server interface {
-	Create(context.Context, *CreteRequest) (*CreateResponse, error)
+	Create(context.Context, *CreateRequest) (*CreateResponse, error)
 	Get(context.Context, *GetRequest) (*GetResponse, error)
 	Update(context.Context, *UpdateRequest) (*emptypb.Empty, error)
 	Delete(context.Context, *DeleteRequest) (*emptypb.Empty, error)
@@ -88,7 +88,7 @@ type UserV1Server interface {
 type UnimplementedUserV1Server struct {
 }
 
-func (UnimplementedUserV1Server) Create(context.Context, *CreteRequest) (*CreateResponse, error) {
+func (UnimplementedUserV1Server) Create(context.Context, *CreateRequest) (*CreateResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Create not implemented")
 }
 func (UnimplementedUserV1Server) Get(context.Context, *GetRequest) (*GetResponse, error) {
@@ -114,7 +114,7 @@ func RegisterUserV1Server(s grpc.ServiceRegistrar, srv UserV1Server) {
 }
 
 func _UserV1_Create_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreteRequest)
+	in := new(CreateRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -126,7 +126,7 @@ func _UserV1_Create_Handler(srv interface{}, ctx context.Context, dec func(inter
 		FullMethod: "/note_v1.UserV1/Create",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserV1Server).Create(ctx, req.(*CreteRequest))
+		return srv.(UserV1Server).Create(ctx, req.(*CreateRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

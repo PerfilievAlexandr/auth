@@ -1,9 +1,9 @@
 package mapper
 
 import (
-	"auth/internal/api/grpc/user/dto"
-	"auth/internal/domain"
-	proto "auth/pkg/user_v1"
+	"github.com/PerfilievAlexandr/auth/internal/api/grpc/user/dto"
+	"github.com/PerfilievAlexandr/auth/internal/domain"
+	proto "github.com/PerfilievAlexandr/auth/pkg/user_v1"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -23,7 +23,7 @@ func MapToUserApi(user *domain.User) *proto.GetResponse {
 	}
 }
 
-func MapToCreateUser(req *proto.CreteRequest) *dto.CreateRequest {
+func MapToCreateUser(req *proto.CreateRequest) *dto.CreateRequest {
 	return &dto.CreateRequest{
 		Name:            req.Name,
 		Email:           req.Email,

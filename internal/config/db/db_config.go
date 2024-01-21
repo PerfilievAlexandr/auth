@@ -1,8 +1,8 @@
 package config
 
 import (
-	configInterface "auth/internal/config/interface"
 	"fmt"
+	configInterface "github.com/PerfilievAlexandr/auth/internal/config/interface"
 	"os"
 
 	"github.com/pkg/errors"

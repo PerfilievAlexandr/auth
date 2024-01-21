@@ -1,10 +1,10 @@
 package config
 
 import (
-	dbConfig "auth/internal/config/db"
-	grpcConfig "auth/internal/config/grpc"
-	configInterface "auth/internal/config/interface"
 	"context"
+	dbConfig "github.com/PerfilievAlexandr/auth/internal/config/db"
+	grpcConfig "github.com/PerfilievAlexandr/auth/internal/config/grpc"
+	configInterface "github.com/PerfilievAlexandr/auth/internal/config/interface"
 	"github.com/joho/godotenv"
 	"log"
 )

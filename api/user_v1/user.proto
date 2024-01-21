@@ -6,16 +6,16 @@ import "google/protobuf/timestamp.proto";
 import "google/protobuf/empty.proto";
 import "google/protobuf/wrappers.proto";
 
-option go_package = "~/Progects/pet/go/auth/internal/api/grpc/user_v1;user_v1";
+option go_package = "github.com/PerfilievAlexandr//auth/internal/api/grpc/user_v1;user_v1";
 
 service UserV1 {
-  rpc Create(CreteRequest) returns (CreateResponse);
+  rpc Create(CreateRequest) returns (CreateResponse);
   rpc Get(GetRequest) returns (GetResponse);
   rpc Update(UpdateRequest) returns (google.protobuf.Empty);
   rpc Delete(DeleteRequest) returns (google.protobuf.Empty);
 }
 
-message CreteRequest {
+message CreateRequest {
   string name = 1;
   string email = 2;
   string password = 3;

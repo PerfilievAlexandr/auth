@@ -1,17 +1,17 @@
 package app
 
 import (
-	"auth/internal/api/grpc/user"
-	"auth/internal/client/db"
-	"auth/internal/client/db/pg"
-	"auth/internal/client/db/transaction"
-	"auth/internal/closer"
-	"auth/internal/config"
-	"auth/internal/repository"
-	userRepository "auth/internal/repository/user"
-	"auth/internal/service"
-	userService "auth/internal/service/user"
 	"context"
+	"github.com/PerfilievAlexandr/auth/internal/api/grpc/user"
+	"github.com/PerfilievAlexandr/auth/internal/config"
+	"github.com/PerfilievAlexandr/auth/internal/repository"
+	userRepository "github.com/PerfilievAlexandr/auth/internal/repository/user"
+	"github.com/PerfilievAlexandr/auth/internal/service"
+	userService "github.com/PerfilievAlexandr/auth/internal/service/user"
+	"github.com/PerfilievAlexandr/platform_common/pkg/closer"
+	"github.com/PerfilievAlexandr/platform_common/pkg/db"
+	"github.com/PerfilievAlexandr/platform_common/pkg/db/pg"
+	"github.com/PerfilievAlexandr/platform_common/pkg/db/transaction"
 	"log"
 )
 

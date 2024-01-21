@@ -1,10 +1,10 @@
 package app
 
 import (
-	"auth/internal/closer"
-	"auth/internal/config"
-	proto "auth/pkg/user_v1"
 	"context"
+	"github.com/PerfilievAlexandr/auth/internal/config"
+	proto "github.com/PerfilievAlexandr/auth/pkg/user_v1"
+	"github.com/PerfilievAlexandr/platform_common/pkg/closer"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/reflection"
