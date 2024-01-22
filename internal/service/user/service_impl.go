@@ -30,6 +30,10 @@ func (s *userService) Get(ctx context.Context, userId int64) (*domain.User, erro
 	return s.userRepository.Get(ctx, userId)
 }
 
+func (s *userService) GetAll(ctx context.Context) ([]*domain.User, error) {
+	return s.userRepository.GetAll(ctx)
+}
+
 func (s *userService) Update(ctx context.Context, req *dto.UpdateRequest) (*emptypb.Empty, error) {
 	return s.userRepository.Update(ctx, req)
 }

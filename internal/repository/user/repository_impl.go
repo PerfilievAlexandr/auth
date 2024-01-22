@@ -18,7 +18,7 @@ type repo struct {
 }
 
 func NewRepository(db db.Client) repository.UserRepository {
-	return &repo{db: db}
+	return &repo{db}
 }
 
 func (s *repo) Create(ctx context.Context, req *apiDto.CreateRequest) (int64, error) {
@@ -41,6 +41,23 @@ func (s *repo) Get(ctx context.Context, userId int64) (*domain.User, error) {
 	}
 
 	return mapper.ToUserFromUserDb(&dbUser), nil
+}
+
+func (s *repo) GetAll(ctx context.Context) ([]*domain.User, error) {
+	query := fmt.Sprintf(`SELECT s.id, s.name, s.email, s.role, s.created_at, s.updated_at FROM users s LIMIT 50`)
+	var dbUsers []dto.UserDb
+	err := s.db.ScanAllContext(ctx, &dbUsers, query)
+	if err != nil {
+		return nil, err
+	}
+
+	var domainUsers []*domain.User
+	for _, dbUser := range dbUsers {
+		mappedUser := mapper.ToUserFromUserDb(&dbUser)
+		domainUsers = append(domainUsers, mappedUser)
+	}
+
+	return domainUsers, nil
 }
 
 func (s *repo) Update(ctx context.Context, req *apiDto.UpdateRequest) (*emptypb.Empty, error) {

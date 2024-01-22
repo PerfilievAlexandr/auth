@@ -39,6 +39,12 @@ type UserServiceMock struct {
 	beforeGetCounter uint64
 	GetMock          mUserServiceMockGet
 
+	funcGetAll          func(ctx context.Context) (ua1 []domain.User, err error)
+	inspectFuncGetAll   func(ctx context.Context)
+	afterGetAllCounter  uint64
+	beforeGetAllCounter uint64
+	GetAllMock          mUserServiceMockGetAll
+
 	funcUpdate          func(ctx context.Context, req *dto.UpdateRequest) (ep1 *emptypb.Empty, err error)
 	inspectFuncUpdate   func(ctx context.Context, req *dto.UpdateRequest)
 	afterUpdateCounter  uint64
@@ -62,6 +68,9 @@ func NewUserServiceMock(t minimock.Tester) *UserServiceMock {
 
 	m.GetMock = mUserServiceMockGet{mock: m}
 	m.GetMock.callArgs = []*UserServiceMockGetParams{}
+
+	m.GetAllMock = mUserServiceMockGetAll{mock: m}
+	m.GetAllMock.callArgs = []*UserServiceMockGetAllParams{}
 
 	m.UpdateMock = mUserServiceMockUpdate{mock: m}
 	m.UpdateMock.callArgs = []*UserServiceMockUpdateParams{}
@@ -722,6 +731,222 @@ func (m *UserServiceMock) MinimockGetInspect() {
 	}
 }
 
+type mUserServiceMockGetAll struct {
+	mock               *UserServiceMock
+	defaultExpectation *UserServiceMockGetAllExpectation
+	expectations       []*UserServiceMockGetAllExpectation
+
+	callArgs []*UserServiceMockGetAllParams
+	mutex    sync.RWMutex
+}
+
+// UserServiceMockGetAllExpectation specifies expectation struct of the UserService.GetAll
+type UserServiceMockGetAllExpectation struct {
+	mock    *UserServiceMock
+	params  *UserServiceMockGetAllParams
+	results *UserServiceMockGetAllResults
+	Counter uint64
+}
+
+// UserServiceMockGetAllParams contains parameters of the UserService.GetAll
+type UserServiceMockGetAllParams struct {
+	ctx context.Context
+}
+
+// UserServiceMockGetAllResults contains results of the UserService.GetAll
+type UserServiceMockGetAllResults struct {
+	ua1 []domain.User
+	err error
+}
+
+// Expect sets up expected params for UserService.GetAll
+func (mmGetAll *mUserServiceMockGetAll) Expect(ctx context.Context) *mUserServiceMockGetAll {
+	if mmGetAll.mock.funcGetAll != nil {
+		mmGetAll.mock.t.Fatalf("UserServiceMock.GetAll mock is already set by Set")
+	}
+
+	if mmGetAll.defaultExpectation == nil {
+		mmGetAll.defaultExpectation = &UserServiceMockGetAllExpectation{}
+	}
+
+	mmGetAll.defaultExpectation.params = &UserServiceMockGetAllParams{ctx}
+	for _, e := range mmGetAll.expectations {
+		if minimock.Equal(e.params, mmGetAll.defaultExpectation.params) {
+			mmGetAll.mock.t.Fatalf("Expectation set by When has same params: %#v", *mmGetAll.defaultExpectation.params)
+		}
+	}
+
+	return mmGetAll
+}
+
+// Inspect accepts an inspector function that has same arguments as the UserService.GetAll
+func (mmGetAll *mUserServiceMockGetAll) Inspect(f func(ctx context.Context)) *mUserServiceMockGetAll {
+	if mmGetAll.mock.inspectFuncGetAll != nil {
+		mmGetAll.mock.t.Fatalf("Inspect function is already set for UserServiceMock.GetAll")
+	}
+
+	mmGetAll.mock.inspectFuncGetAll = f
+
+	return mmGetAll
+}
+
+// Return sets up results that will be returned by UserService.GetAll
+func (mmGetAll *mUserServiceMockGetAll) Return(ua1 []domain.User, err error) *UserServiceMock {
+	if mmGetAll.mock.funcGetAll != nil {
+		mmGetAll.mock.t.Fatalf("UserServiceMock.GetAll mock is already set by Set")
+	}
+
+	if mmGetAll.defaultExpectation == nil {
+		mmGetAll.defaultExpectation = &UserServiceMockGetAllExpectation{mock: mmGetAll.mock}
+	}
+	mmGetAll.defaultExpectation.results = &UserServiceMockGetAllResults{ua1, err}
+	return mmGetAll.mock
+}
+
+// Set uses given function f to mock the UserService.GetAll method
+func (mmGetAll *mUserServiceMockGetAll) Set(f func(ctx context.Context) (ua1 []domain.User, err error)) *UserServiceMock {
+	if mmGetAll.defaultExpectation != nil {
+		mmGetAll.mock.t.Fatalf("Default expectation is already set for the UserService.GetAll method")
+	}
+
+	if len(mmGetAll.expectations) > 0 {
+		mmGetAll.mock.t.Fatalf("Some expectations are already set for the UserService.GetAll method")
+	}
+
+	mmGetAll.mock.funcGetAll = f
+	return mmGetAll.mock
+}
+
+// When sets expectation for the UserService.GetAll which will trigger the result defined by the following
+// Then helper
+func (mmGetAll *mUserServiceMockGetAll) When(ctx context.Context) *UserServiceMockGetAllExpectation {
+	if mmGetAll.mock.funcGetAll != nil {
+		mmGetAll.mock.t.Fatalf("UserServiceMock.GetAll mock is already set by Set")
+	}
+
+	expectation := &UserServiceMockGetAllExpectation{
+		mock:   mmGetAll.mock,
+		params: &UserServiceMockGetAllParams{ctx},
+	}
+	mmGetAll.expectations = append(mmGetAll.expectations, expectation)
+	return expectation
+}
+
+// Then sets up UserService.GetAll return parameters for the expectation previously defined by the When method
+func (e *UserServiceMockGetAllExpectation) Then(ua1 []domain.User, err error) *UserServiceMock {
+	e.results = &UserServiceMockGetAllResults{ua1, err}
+	return e.mock
+}
+
+// GetAll implements service.UserService
+func (mmGetAll *UserServiceMock) GetAll(ctx context.Context) (ua1 []domain.User, err error) {
+	mm_atomic.AddUint64(&mmGetAll.beforeGetAllCounter, 1)
+	defer mm_atomic.AddUint64(&mmGetAll.afterGetAllCounter, 1)
+
+	if mmGetAll.inspectFuncGetAll != nil {
+		mmGetAll.inspectFuncGetAll(ctx)
+	}
+
+	mm_params := UserServiceMockGetAllParams{ctx}
+
+	// Record call args
+	mmGetAll.GetAllMock.mutex.Lock()
+	mmGetAll.GetAllMock.callArgs = append(mmGetAll.GetAllMock.callArgs, &mm_params)
+	mmGetAll.GetAllMock.mutex.Unlock()
+
+	for _, e := range mmGetAll.GetAllMock.expectations {
+		if minimock.Equal(*e.params, mm_params) {
+			mm_atomic.AddUint64(&e.Counter, 1)
+			return e.results.ua1, e.results.err
+		}
+	}
+
+	if mmGetAll.GetAllMock.defaultExpectation != nil {
+		mm_atomic.AddUint64(&mmGetAll.GetAllMock.defaultExpectation.Counter, 1)
+		mm_want := mmGetAll.GetAllMock.defaultExpectation.params
+		mm_got := UserServiceMockGetAllParams{ctx}
+		if mm_want != nil && !minimock.Equal(*mm_want, mm_got) {
+			mmGetAll.t.Errorf("UserServiceMock.GetAll got unexpected parameters, want: %#v, got: %#v%s\n", *mm_want, mm_got, minimock.Diff(*mm_want, mm_got))
+		}
+
+		mm_results := mmGetAll.GetAllMock.defaultExpectation.results
+		if mm_results == nil {
+			mmGetAll.t.Fatal("No results are set for the UserServiceMock.GetAll")
+		}
+		return (*mm_results).ua1, (*mm_results).err
+	}
+	if mmGetAll.funcGetAll != nil {
+		return mmGetAll.funcGetAll(ctx)
+	}
+	mmGetAll.t.Fatalf("Unexpected call to UserServiceMock.GetAll. %v", ctx)
+	return
+}
+
+// GetAllAfterCounter returns a count of finished UserServiceMock.GetAll invocations
+func (mmGetAll *UserServiceMock) GetAllAfterCounter() uint64 {
+	return mm_atomic.LoadUint64(&mmGetAll.afterGetAllCounter)
+}
+
+// GetAllBeforeCounter returns a count of UserServiceMock.GetAll invocations
+func (mmGetAll *UserServiceMock) GetAllBeforeCounter() uint64 {
+	return mm_atomic.LoadUint64(&mmGetAll.beforeGetAllCounter)
+}
+
+// Calls returns a list of arguments used in each call to UserServiceMock.GetAll.
+// The list is in the same order as the calls were made (i.e. recent calls have a higher index)
+func (mmGetAll *mUserServiceMockGetAll) Calls() []*UserServiceMockGetAllParams {
+	mmGetAll.mutex.RLock()
+
+	argCopy := make([]*UserServiceMockGetAllParams, len(mmGetAll.callArgs))
+	copy(argCopy, mmGetAll.callArgs)
+
+	mmGetAll.mutex.RUnlock()
+
+	return argCopy
+}
+
+// MinimockGetAllDone returns true if the count of the GetAll invocations corresponds
+// the number of defined expectations
+func (m *UserServiceMock) MinimockGetAllDone() bool {
+	for _, e := range m.GetAllMock.expectations {
+		if mm_atomic.LoadUint64(&e.Counter) < 1 {
+			return false
+		}
+	}
+
+	// if default expectation was set then invocations count should be greater than zero
+	if m.GetAllMock.defaultExpectation != nil && mm_atomic.LoadUint64(&m.afterGetAllCounter) < 1 {
+		return false
+	}
+	// if func was set then invocations count should be greater than zero
+	if m.funcGetAll != nil && mm_atomic.LoadUint64(&m.afterGetAllCounter) < 1 {
+		return false
+	}
+	return true
+}
+
+// MinimockGetAllInspect logs each unmet expectation
+func (m *UserServiceMock) MinimockGetAllInspect() {
+	for _, e := range m.GetAllMock.expectations {
+		if mm_atomic.LoadUint64(&e.Counter) < 1 {
+			m.t.Errorf("Expected call to UserServiceMock.GetAll with params: %#v", *e.params)
+		}
+	}
+
+	// if default expectation was set then invocations count should be greater than zero
+	if m.GetAllMock.defaultExpectation != nil && mm_atomic.LoadUint64(&m.afterGetAllCounter) < 1 {
+		if m.GetAllMock.defaultExpectation.params == nil {
+			m.t.Error("Expected call to UserServiceMock.GetAll")
+		} else {
+			m.t.Errorf("Expected call to UserServiceMock.GetAll with params: %#v", *m.GetAllMock.defaultExpectation.params)
+		}
+	}
+	// if func was set then invocations count should be greater than zero
+	if m.funcGetAll != nil && mm_atomic.LoadUint64(&m.afterGetAllCounter) < 1 {
+		m.t.Error("Expected call to UserServiceMock.GetAll")
+	}
+}
+
 type mUserServiceMockUpdate struct {
 	mock               *UserServiceMock
 	defaultExpectation *UserServiceMockUpdateExpectation
@@ -949,6 +1174,8 @@ func (m *UserServiceMock) MinimockFinish() {
 
 			m.MinimockGetInspect()
 
+			m.MinimockGetAllInspect()
+
 			m.MinimockUpdateInspect()
 			m.t.FailNow()
 		}
@@ -977,5 +1204,6 @@ func (m *UserServiceMock) minimockDone() bool {
 		m.MinimockCreateDone() &&
 		m.MinimockDeleteDone() &&
 		m.MinimockGetDone() &&
+		m.MinimockGetAllDone() &&
 		m.MinimockUpdateDone()
 }

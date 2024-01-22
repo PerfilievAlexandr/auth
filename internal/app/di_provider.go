@@ -3,6 +3,7 @@ package app
 import (
 	"context"
 	"github.com/PerfilievAlexandr/auth/internal/api/grpc/user"
+	"github.com/PerfilievAlexandr/auth/internal/api/http"
 	"github.com/PerfilievAlexandr/auth/internal/config"
 	"github.com/PerfilievAlexandr/auth/internal/repository"
 	userRepository "github.com/PerfilievAlexandr/auth/internal/repository/user"
@@ -21,7 +22,8 @@ type diProvider struct {
 	txManager      db.TxManager
 	userRepository repository.UserRepository
 	userService    service.UserService
-	server         *user.Server
+	grpcServer     *user.Server
+	httpHandler    *http.Handler
 }
 
 func newProvider() *diProvider {
@@ -92,10 +94,18 @@ func (s *diProvider) UserService(ctx context.Context) repository.UserRepository 
 	return s.userService
 }
 
-func (s *diProvider) UserServer(ctx context.Context) *user.Server {
-	if s.server == nil {
-		s.server = user.NewImplementation(s.UserService(ctx))
+func (s *diProvider) GrpcServer(ctx context.Context) *user.Server {
+	if s.grpcServer == nil {
+		s.grpcServer = user.NewImplementation(s.UserService(ctx))
 	}
 
-	return s.server
+	return s.grpcServer
+}
+
+func (s *diProvider) HttpHandler(ctx context.Context) *http.Handler {
+	if s.httpHandler == nil {
+		s.httpHandler = http.NewHandler(s.UserService(ctx))
+	}
+
+	return s.httpHandler
 }

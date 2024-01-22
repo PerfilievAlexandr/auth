@@ -10,11 +10,14 @@ import (
 	"google.golang.org/grpc/reflection"
 	"log"
 	"net"
+	"net/http"
+	"sync"
 )
 
 type App struct {
 	diProvider *diProvider
 	grpcServer *grpc.Server
+	httpServer *http.Server
 }
 
 func NewApp(ctx context.Context) (*App, error) {
@@ -34,14 +37,38 @@ func (a *App) Run(ctx context.Context) error {
 		closer.Wait()
 	}()
 
-	return a.runGRPCServer(ctx)
+	wg := sync.WaitGroup{}
+	wg.Add(3)
+
+	go func() {
+		defer wg.Done()
+
+		err := a.runGrpcServer(ctx)
+		if err != nil {
+			log.Fatalf("failed to run GRPC grpcServer: %v", err)
+		}
+	}()
+
+	go func() {
+		defer wg.Done()
+
+		err := a.runHttpServer(ctx)
+		if err != nil {
+			log.Fatalf("failed to run HTTP grpcServer: %v", err)
+		}
+	}()
+
+	wg.Wait()
+
+	return nil
 }
 
 func (a *App) initDeps(ctx context.Context) error {
 	inits := []func(context.Context) error{
 		a.initConfig,
 		a.initProvider,
-		a.initGRPCServer,
+		a.initGrpcServer,
+		a.initHttpServer,
 	}
 
 	for _, f := range inits {
@@ -68,17 +95,17 @@ func (a *App) initProvider(_ context.Context) error {
 	return nil
 }
 
-func (a *App) initGRPCServer(ctx context.Context) error {
+func (a *App) initGrpcServer(ctx context.Context) error {
 	a.grpcServer = grpc.NewServer(grpc.Creds(insecure.NewCredentials()))
 
 	reflection.Register(a.grpcServer)
 
-	proto.RegisterUserV1Server(a.grpcServer, a.diProvider.UserServer(ctx))
+	proto.RegisterUserV1Server(a.grpcServer, a.diProvider.GrpcServer(ctx))
 
 	return nil
 }
 
-func (a *App) runGRPCServer(ctx context.Context) error {
+func (a *App) runGrpcServer(ctx context.Context) error {
 	log.Printf("GRPC server is running on %s", a.diProvider.Config(ctx).GRPCConfig.Address())
 
 	list, err := net.Listen("tcp", a.diProvider.Config(ctx).GRPCConfig.Address())
@@ -87,6 +114,27 @@ func (a *App) runGRPCServer(ctx context.Context) error {
 	}
 
 	err = a.grpcServer.Serve(list)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (a *App) initHttpServer(ctx context.Context) error {
+	a.diProvider.HttpHandler(ctx)
+	a.httpServer = &http.Server{
+		Addr:    a.diProvider.config.HttpConfig.Address(),
+		Handler: a.diProvider.httpHandler.InitRoutes(),
+	}
+
+	return nil
+}
+
+func (a *App) runHttpServer(_ context.Context) error {
+	log.Printf("HTTP server is running on %s", a.diProvider.config.HttpConfig.Address())
+
+	err := a.httpServer.ListenAndServe()
 	if err != nil {
 		return err
 	}
