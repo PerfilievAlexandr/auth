@@ -2,6 +2,7 @@ package app
 
 import (
 	"context"
+	"github.com/PerfilievAlexandr/auth/internal/api/grpc/interceptor"
 	"github.com/PerfilievAlexandr/auth/internal/config"
 	proto "github.com/PerfilievAlexandr/auth/pkg/user_v1"
 	"github.com/PerfilievAlexandr/platform_common/pkg/closer"
@@ -96,7 +97,10 @@ func (a *App) initProvider(_ context.Context) error {
 }
 
 func (a *App) initGrpcServer(ctx context.Context) error {
-	a.grpcServer = grpc.NewServer(grpc.Creds(insecure.NewCredentials()))
+	a.grpcServer = grpc.NewServer(
+		grpc.Creds(insecure.NewCredentials()),
+		grpc.UnaryInterceptor(interceptor.ValidateInterceptor),
+	)
 
 	reflection.Register(a.grpcServer)
 

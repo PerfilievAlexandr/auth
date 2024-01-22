@@ -4,6 +4,7 @@ go 1.22rc1
 
 require (
 	github.com/PerfilievAlexandr/platform_common v1.0.2
+	github.com/envoyproxy/protoc-gen-validate v1.0.2
 	github.com/gin-gonic/gin v1.9.1
 	github.com/gojuno/minimock/v3 v3.3.6
 	github.com/joho/godotenv v1.5.1
