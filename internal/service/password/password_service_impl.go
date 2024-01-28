@@ -14,7 +14,7 @@ func NewPasswordService() service.PasswordService {
 }
 
 func (p passwordServiceImpl) HashAndSaltPassword(_ context.Context, password string) (string, error) {
-	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.MinCost)
+	hash, err := bcrypt.GenerateFromPassword([]byte(strings.TrimSpace(password)), bcrypt.MinCost)
 	if err != nil {
 		return password, err
 	}
@@ -22,8 +22,8 @@ func (p passwordServiceImpl) HashAndSaltPassword(_ context.Context, password str
 	return string(hash), nil
 }
 
-func (p passwordServiceImpl) CompareWithHashedPassword(_ context.Context, newPassword string, hashedPassword string) bool {
-	err := bcrypt.CompareHashAndPassword([]byte(strings.TrimSpace(newPassword)), []byte(hashedPassword))
+func (p passwordServiceImpl) CompareWithHashedPassword(_ context.Context, dbPassword string, newPassword string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(dbPassword), []byte(strings.TrimSpace(newPassword)))
 	if err != nil {
 		return false
 	}

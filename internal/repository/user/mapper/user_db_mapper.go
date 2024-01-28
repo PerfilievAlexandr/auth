@@ -9,6 +9,7 @@ func ToUserFromUserDb(userDb *dtoUserDb.UserDb) *domain.User {
 	return &domain.User{
 		Id:        userDb.Id,
 		Name:      userDb.Name,
+		Password:  userDb.Password,
 		Email:     userDb.Email,
 		Role:      userDb.Role,
 		CreatedAt: userDb.CreatedAt,

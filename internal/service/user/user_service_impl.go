@@ -50,7 +50,7 @@ func (s *userService) Create(ctx context.Context, req dtoHttpUser.SignUpRequest)
 }
 
 func (s *userService) Get(ctx context.Context, userId int64) (*domain.User, error) {
-	return s.userRepository.Get(ctx, userId)
+	return s.userRepository.GetById(ctx, userId)
 }
 
 func (s *userService) GetAll(ctx context.Context) ([]*domain.User, error) {

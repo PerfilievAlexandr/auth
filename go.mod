@@ -12,6 +12,7 @@ require (
 	github.com/stretchr/testify v1.8.3
 	google.golang.org/grpc v1.60.1
 	google.golang.org/protobuf v1.32.0
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 )
 
 require (

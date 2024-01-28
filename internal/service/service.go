@@ -2,8 +2,10 @@ package service
 
 import (
 	"context"
+	"github.com/PerfilievAlexandr/auth/internal/api/grpc/auth/dtoGrpcAuth"
 	"github.com/PerfilievAlexandr/auth/internal/api/http/dtoHttpUser"
 	"github.com/PerfilievAlexandr/auth/internal/domain"
+	"github.com/PerfilievAlexandr/auth/internal/dto"
 )
 
 type UserService interface {
@@ -16,6 +18,19 @@ type UserService interface {
 
 type PasswordService interface {
 	HashAndSaltPassword(ctx context.Context, password string) (string, error)
-	CompareWithHashedPassword(ctx context.Context, newPassword string, hashedPassword string) bool
+	CompareWithHashedPassword(ctx context.Context, dbPassword string, newPassword string) bool
 	CompareWithConfirmPassword(_ context.Context, password string, confirmPassword string) bool
+}
+
+type AuthService interface {
+	Login(ctx context.Context, req authGrpcDto.LoginRequest) (string, error)
+	GetRefreshToken(ctx context.Context, req string) (string, error)
+	GetAccessToken(ctx context.Context, req string) (string, error)
+}
+
+type JwtService interface {
+	GenerateRefreshToken(info dto.JwtUserInfo) (string, error)
+	GenerateAccessToken(info dto.JwtUserInfo) (string, error)
+	VerifyRefreshToken(token string) (*dto.JwtClaims, error)
+	VerifyAccessToken(token string) (*dto.JwtClaims, error)
 }

@@ -2,12 +2,14 @@ package app
 
 import (
 	"context"
-	"github.com/PerfilievAlexandr/auth/internal/api/grpc/user"
+	"github.com/PerfilievAlexandr/auth/internal/api/grpc/auth"
 	"github.com/PerfilievAlexandr/auth/internal/api/http"
 	"github.com/PerfilievAlexandr/auth/internal/config"
 	"github.com/PerfilievAlexandr/auth/internal/repository"
 	userRepository "github.com/PerfilievAlexandr/auth/internal/repository/user"
 	"github.com/PerfilievAlexandr/auth/internal/service"
+	authService "github.com/PerfilievAlexandr/auth/internal/service/auth"
+	jwtService "github.com/PerfilievAlexandr/auth/internal/service/jwt"
 	"github.com/PerfilievAlexandr/auth/internal/service/password"
 	userService "github.com/PerfilievAlexandr/auth/internal/service/user"
 	"github.com/PerfilievAlexandr/platform_common/pkg/closer"
@@ -23,8 +25,10 @@ type diProvider struct {
 	txManager       db.TxManager
 	userRepository  repository.UserRepository
 	userService     service.UserService
+	authService     service.AuthService
+	jwtService      service.JwtService
 	passwordService service.PasswordService
-	grpcServer      *user.Server
+	grpcServer      *auth.Server
 	httpHandler     *http.Handler
 }
 
@@ -105,9 +109,31 @@ func (s *diProvider) PasswordService(_ context.Context) service.PasswordService 
 	return s.passwordService
 }
 
-func (s *diProvider) GrpcServer(ctx context.Context) *user.Server {
+func (s *diProvider) AuthService(ctx context.Context) service.AuthService {
+	if s.authService == nil {
+		s.authService = authService.NewAuthService(
+			s.UserRepository(ctx),
+			s.PasswordService(ctx),
+			s.JwtService(ctx),
+		)
+	}
+
+	return s.authService
+}
+
+func (s *diProvider) JwtService(ctx context.Context) service.JwtService {
+	if s.jwtService == nil {
+		s.jwtService = jwtService.NewJwtService(
+			s.Config(ctx),
+		)
+	}
+
+	return s.jwtService
+}
+
+func (s *diProvider) GrpcServer(ctx context.Context) *auth.Server {
 	if s.grpcServer == nil {
-		s.grpcServer = user.NewImplementation(s.UserService(ctx))
+		s.grpcServer = auth.NewImplementation(s.AuthService(ctx))
 	}
 
 	return s.grpcServer

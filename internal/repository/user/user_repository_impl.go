@@ -32,10 +32,21 @@ func (s *repo) Create(ctx context.Context, req dto.CreateUser) (int64, error) {
 	return userId, nil
 }
 
-func (s *repo) Get(ctx context.Context, userId int64) (*domain.User, error) {
-	query := fmt.Sprintf(`SELECT s.id, s.name, s.email, s.role, s.created_at, s.updated_at FROM users s WHERE s.id = $1`)
+func (s *repo) GetById(ctx context.Context, userId int64) (*domain.User, error) {
+	query := fmt.Sprintf(`SELECT s.id, s.name, s.password, s.email, s.role, s.created_at, s.updated_at FROM users s WHERE s.id = $1`)
 	var dbUser = dtoUserDb.UserDb{}
 	err := s.db.ScanOneContext(ctx, &dbUser, query, userId)
+	if err != nil {
+		return nil, err
+	}
+
+	return mapper.ToUserFromUserDb(&dbUser), nil
+}
+
+func (s *repo) GetByUsername(ctx context.Context, username string) (*domain.User, error) {
+	query := fmt.Sprintf(`SELECT s.id, s.name, s.password, s.email, s.role, s.created_at, s.updated_at FROM users s WHERE s.name = $1`)
+	var dbUser = dtoUserDb.UserDb{}
+	err := s.db.ScanOneContext(ctx, &dbUser, query, username)
 	if err != nil {
 		return nil, err
 	}

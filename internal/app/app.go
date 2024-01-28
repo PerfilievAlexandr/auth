@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/PerfilievAlexandr/auth/internal/api/grpc/interceptor"
 	"github.com/PerfilievAlexandr/auth/internal/config"
-	proto "github.com/PerfilievAlexandr/auth/pkg/user_v1"
+	proto "github.com/PerfilievAlexandr/auth/pkg/auth_v1"
 	"github.com/PerfilievAlexandr/platform_common/pkg/closer"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -104,7 +104,7 @@ func (a *App) initGrpcServer(ctx context.Context) error {
 
 	reflection.Register(a.grpcServer)
 
-	proto.RegisterUserV1Server(a.grpcServer, a.diProvider.GrpcServer(ctx))
+	proto.RegisterAuthV1Server(a.grpcServer, a.diProvider.GrpcServer(ctx))
 
 	return nil
 }

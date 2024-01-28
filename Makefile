@@ -13,18 +13,18 @@ get-deps:
 	go get -u google.golang.org/grpc/cmd/protoc-gen-go-grpc
 
 generate:
-	make generate-user-api
+	make generate-auth-api
 
-generate-user-api:
-	mkdir -p pkg/user_v1
-	protoc --proto_path api/user_v1 --proto_path vendor.protogen \
-	--go_out=pkg/user_v1 --go_opt=paths=source_relative \
+generate-auth-api:
+	mkdir -p pkg/auth_v1
+	protoc --proto_path api/auth_v1 --proto_path vendor.protogen \
+	--go_out=pkg/auth_v1 --go_opt=paths=source_relative \
 	--plugin=protoc-gen-go=bin/protoc-gen-go \
-	--go-grpc_out=pkg/user_v1 --go-grpc_opt=paths=source_relative \
+	--go-grpc_out=pkg/auth_v1 --go-grpc_opt=paths=source_relative \
 	--plugin=protoc-gen-go-grpc=bin/protoc-gen-go-grpc \
-	--validate_out lang=go:pkg/user_v1 --validate_opt=paths=source_relative \
+	--validate_out lang=go:pkg/auth_v1 --validate_opt=paths=source_relative \
 	--plugin=protoc-gen-validate=bin/protoc-gen-validate \
-	api/user_v1/user.proto
+	api/auth_v1/auth.proto
 
 local-migration-status:
 	$(LOCAL_BIN)/goose -dir ${MIGRATION_DIR} postgres $(PG_DSN) status -v
