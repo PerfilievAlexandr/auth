@@ -1,4 +1,4 @@
-package dto
+package dtoGrpcUser
 
 type CreateRequest struct {
 	Name            string

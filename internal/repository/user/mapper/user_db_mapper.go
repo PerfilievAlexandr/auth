@@ -2,10 +2,10 @@ package mapper
 
 import (
 	"github.com/PerfilievAlexandr/auth/internal/domain"
-	dbUser "github.com/PerfilievAlexandr/auth/internal/repository/user/dto"
+	"github.com/PerfilievAlexandr/auth/internal/repository/user/dtoUserDb"
 )
 
-func ToUserFromUserDb(userDb *dbUser.UserDb) *domain.User {
+func ToUserFromUserDb(userDb *dtoUserDb.UserDb) *domain.User {
 	return &domain.User{
 		Id:        userDb.Id,
 		Name:      userDb.Name,

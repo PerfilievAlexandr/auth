@@ -8,6 +8,7 @@ import (
 	"github.com/PerfilievAlexandr/auth/internal/repository"
 	userRepository "github.com/PerfilievAlexandr/auth/internal/repository/user"
 	"github.com/PerfilievAlexandr/auth/internal/service"
+	"github.com/PerfilievAlexandr/auth/internal/service/password"
 	userService "github.com/PerfilievAlexandr/auth/internal/service/user"
 	"github.com/PerfilievAlexandr/platform_common/pkg/closer"
 	"github.com/PerfilievAlexandr/platform_common/pkg/db"
@@ -17,13 +18,14 @@ import (
 )
 
 type diProvider struct {
-	config         *config.Config
-	db             db.Client
-	txManager      db.TxManager
-	userRepository repository.UserRepository
-	userService    service.UserService
-	grpcServer     *user.Server
-	httpHandler    *http.Handler
+	config          *config.Config
+	db              db.Client
+	txManager       db.TxManager
+	userRepository  repository.UserRepository
+	userService     service.UserService
+	passwordService service.PasswordService
+	grpcServer      *user.Server
+	httpHandler     *http.Handler
 }
 
 func newProvider() *diProvider {
@@ -83,15 +85,24 @@ func (s *diProvider) UserRepository(ctx context.Context) repository.UserReposito
 	return s.userRepository
 }
 
-func (s *diProvider) UserService(ctx context.Context) repository.UserRepository {
+func (s *diProvider) UserService(ctx context.Context) service.UserService {
 	if s.userService == nil {
 		s.userService = userService.NewUserService(
 			s.UserRepository(ctx),
 			s.TxManager(ctx),
+			s.PasswordService(ctx),
 		)
 	}
 
 	return s.userService
+}
+
+func (s *diProvider) PasswordService(_ context.Context) service.PasswordService {
+	if s.passwordService == nil {
+		s.passwordService = passwordService.NewPasswordService()
+	}
+
+	return s.passwordService
 }
 
 func (s *diProvider) GrpcServer(ctx context.Context) *user.Server {

@@ -1,12 +1,12 @@
-package mapper
+package httpMapper
 
 import (
-	"github.com/PerfilievAlexandr/auth/internal/api/http/dto"
+	"github.com/PerfilievAlexandr/auth/internal/api/http/dtoHttpUser"
 	"github.com/PerfilievAlexandr/auth/internal/domain"
 )
 
-func MapUserToApiDto(user *domain.User) *dto.UserApi {
-	return &dto.UserApi{
+func MapUserToApiDto(user *domain.User) *dtoHttpUser.UserResponse {
+	return &dtoHttpUser.UserResponse{
 		Id:        user.Id,
 		Name:      user.Name,
 		Email:     user.Email,

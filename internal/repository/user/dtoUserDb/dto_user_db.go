@@ -1,4 +1,4 @@
-package dto
+package dtoUserDb
 
 import (
 	"database/sql"

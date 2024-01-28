@@ -10,7 +10,7 @@ import (
 	mm_atomic "sync/atomic"
 	mm_time "time"
 
-	"github.com/PerfilievAlexandr/auth/internal/api/grpc/user/dto"
+	"github.com/PerfilievAlexandr/auth/internal/api/grpc/user/dtoGrpcUser"
 	"github.com/PerfilievAlexandr/auth/internal/domain"
 	"github.com/gojuno/minimock/v3"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -21,8 +21,8 @@ type UserServiceMock struct {
 	t          minimock.Tester
 	finishOnce sync.Once
 
-	funcCreate          func(ctx context.Context, req *dto.CreateRequest) (i1 int64, err error)
-	inspectFuncCreate   func(ctx context.Context, req *dto.CreateRequest)
+	funcCreate          func(ctx context.Context, req *dtoGrpcUser.CreateRequest) (i1 int64, err error)
+	inspectFuncCreate   func(ctx context.Context, req *dtoGrpcUser.CreateRequest)
 	afterCreateCounter  uint64
 	beforeCreateCounter uint64
 	CreateMock          mUserServiceMockCreate
@@ -45,8 +45,8 @@ type UserServiceMock struct {
 	beforeGetAllCounter uint64
 	GetAllMock          mUserServiceMockGetAll
 
-	funcUpdate          func(ctx context.Context, req *dto.UpdateRequest) (ep1 *emptypb.Empty, err error)
-	inspectFuncUpdate   func(ctx context.Context, req *dto.UpdateRequest)
+	funcUpdate          func(ctx context.Context, req *dtoGrpcUser.UpdateRequest) (ep1 *emptypb.Empty, err error)
+	inspectFuncUpdate   func(ctx context.Context, req *dtoGrpcUser.UpdateRequest)
 	afterUpdateCounter  uint64
 	beforeUpdateCounter uint64
 	UpdateMock          mUserServiceMockUpdate
@@ -100,7 +100,7 @@ type UserServiceMockCreateExpectation struct {
 // UserServiceMockCreateParams contains parameters of the UserService.Create
 type UserServiceMockCreateParams struct {
 	ctx context.Context
-	req *dto.CreateRequest
+	req *dtoGrpcUser.CreateRequest
 }
 
 // UserServiceMockCreateResults contains results of the UserService.Create
@@ -110,7 +110,7 @@ type UserServiceMockCreateResults struct {
 }
 
 // Expect sets up expected params for UserService.Create
-func (mmCreate *mUserServiceMockCreate) Expect(ctx context.Context, req *dto.CreateRequest) *mUserServiceMockCreate {
+func (mmCreate *mUserServiceMockCreate) Expect(ctx context.Context, req *dtoGrpcUser.CreateRequest) *mUserServiceMockCreate {
 	if mmCreate.mock.funcCreate != nil {
 		mmCreate.mock.t.Fatalf("UserServiceMock.Create mock is already set by Set")
 	}
@@ -130,7 +130,7 @@ func (mmCreate *mUserServiceMockCreate) Expect(ctx context.Context, req *dto.Cre
 }
 
 // Inspect accepts an inspector function that has same arguments as the UserService.Create
-func (mmCreate *mUserServiceMockCreate) Inspect(f func(ctx context.Context, req *dto.CreateRequest)) *mUserServiceMockCreate {
+func (mmCreate *mUserServiceMockCreate) Inspect(f func(ctx context.Context, req *dtoGrpcUser.CreateRequest)) *mUserServiceMockCreate {
 	if mmCreate.mock.inspectFuncCreate != nil {
 		mmCreate.mock.t.Fatalf("Inspect function is already set for UserServiceMock.Create")
 	}
@@ -154,7 +154,7 @@ func (mmCreate *mUserServiceMockCreate) Return(i1 int64, err error) *UserService
 }
 
 // Set uses given function f to mock the UserService.Create method
-func (mmCreate *mUserServiceMockCreate) Set(f func(ctx context.Context, req *dto.CreateRequest) (i1 int64, err error)) *UserServiceMock {
+func (mmCreate *mUserServiceMockCreate) Set(f func(ctx context.Context, req *dtoGrpcUser.CreateRequest) (i1 int64, err error)) *UserServiceMock {
 	if mmCreate.defaultExpectation != nil {
 		mmCreate.mock.t.Fatalf("Default expectation is already set for the UserService.Create method")
 	}
@@ -169,7 +169,7 @@ func (mmCreate *mUserServiceMockCreate) Set(f func(ctx context.Context, req *dto
 
 // When sets expectation for the UserService.Create which will trigger the result defined by the following
 // Then helper
-func (mmCreate *mUserServiceMockCreate) When(ctx context.Context, req *dto.CreateRequest) *UserServiceMockCreateExpectation {
+func (mmCreate *mUserServiceMockCreate) When(ctx context.Context, req *dtoGrpcUser.CreateRequest) *UserServiceMockCreateExpectation {
 	if mmCreate.mock.funcCreate != nil {
 		mmCreate.mock.t.Fatalf("UserServiceMock.Create mock is already set by Set")
 	}
@@ -189,7 +189,7 @@ func (e *UserServiceMockCreateExpectation) Then(i1 int64, err error) *UserServic
 }
 
 // Create implements service.UserService
-func (mmCreate *UserServiceMock) Create(ctx context.Context, req *dto.CreateRequest) (i1 int64, err error) {
+func (mmCreate *UserServiceMock) Create(ctx context.Context, req *dtoGrpcUser.CreateRequest) (i1 int64, err error) {
 	mm_atomic.AddUint64(&mmCreate.beforeCreateCounter, 1)
 	defer mm_atomic.AddUint64(&mmCreate.afterCreateCounter, 1)
 
@@ -306,7 +306,7 @@ type mUserServiceMockDelete struct {
 	mutex    sync.RWMutex
 }
 
-// UserServiceMockDeleteExpectation specifies expectation struct of the UserService.Delete
+// UserServiceMockDeleteExpectation specifies expectation struct of the UserService.delete
 type UserServiceMockDeleteExpectation struct {
 	mock    *UserServiceMock
 	params  *UserServiceMockDeleteParams
@@ -314,22 +314,22 @@ type UserServiceMockDeleteExpectation struct {
 	Counter uint64
 }
 
-// UserServiceMockDeleteParams contains parameters of the UserService.Delete
+// UserServiceMockDeleteParams contains parameters of the UserService.delete
 type UserServiceMockDeleteParams struct {
 	ctx context.Context
 	id  int64
 }
 
-// UserServiceMockDeleteResults contains results of the UserService.Delete
+// UserServiceMockDeleteResults contains results of the UserService.delete
 type UserServiceMockDeleteResults struct {
 	ep1 *emptypb.Empty
 	err error
 }
 
-// Expect sets up expected params for UserService.Delete
+// Expect sets up expected params for UserService.delete
 func (mmDelete *mUserServiceMockDelete) Expect(ctx context.Context, id int64) *mUserServiceMockDelete {
 	if mmDelete.mock.funcDelete != nil {
-		mmDelete.mock.t.Fatalf("UserServiceMock.Delete mock is already set by Set")
+		mmDelete.mock.t.Fatalf("UserServiceMock.delete mock is already set by Set")
 	}
 
 	if mmDelete.defaultExpectation == nil {
@@ -346,10 +346,10 @@ func (mmDelete *mUserServiceMockDelete) Expect(ctx context.Context, id int64) *m
 	return mmDelete
 }
 
-// Inspect accepts an inspector function that has same arguments as the UserService.Delete
+// Inspect accepts an inspector function that has same arguments as the UserService.delete
 func (mmDelete *mUserServiceMockDelete) Inspect(f func(ctx context.Context, id int64)) *mUserServiceMockDelete {
 	if mmDelete.mock.inspectFuncDelete != nil {
-		mmDelete.mock.t.Fatalf("Inspect function is already set for UserServiceMock.Delete")
+		mmDelete.mock.t.Fatalf("Inspect function is already set for UserServiceMock.delete")
 	}
 
 	mmDelete.mock.inspectFuncDelete = f
@@ -357,10 +357,10 @@ func (mmDelete *mUserServiceMockDelete) Inspect(f func(ctx context.Context, id i
 	return mmDelete
 }
 
-// Return sets up results that will be returned by UserService.Delete
+// Return sets up results that will be returned by UserService.delete
 func (mmDelete *mUserServiceMockDelete) Return(ep1 *emptypb.Empty, err error) *UserServiceMock {
 	if mmDelete.mock.funcDelete != nil {
-		mmDelete.mock.t.Fatalf("UserServiceMock.Delete mock is already set by Set")
+		mmDelete.mock.t.Fatalf("UserServiceMock.delete mock is already set by Set")
 	}
 
 	if mmDelete.defaultExpectation == nil {
@@ -370,25 +370,25 @@ func (mmDelete *mUserServiceMockDelete) Return(ep1 *emptypb.Empty, err error) *U
 	return mmDelete.mock
 }
 
-// Set uses given function f to mock the UserService.Delete method
+// Set uses given function f to mock the UserService.delete method
 func (mmDelete *mUserServiceMockDelete) Set(f func(ctx context.Context, id int64) (ep1 *emptypb.Empty, err error)) *UserServiceMock {
 	if mmDelete.defaultExpectation != nil {
-		mmDelete.mock.t.Fatalf("Default expectation is already set for the UserService.Delete method")
+		mmDelete.mock.t.Fatalf("Default expectation is already set for the UserService.delete method")
 	}
 
 	if len(mmDelete.expectations) > 0 {
-		mmDelete.mock.t.Fatalf("Some expectations are already set for the UserService.Delete method")
+		mmDelete.mock.t.Fatalf("Some expectations are already set for the UserService.delete method")
 	}
 
 	mmDelete.mock.funcDelete = f
 	return mmDelete.mock
 }
 
-// When sets expectation for the UserService.Delete which will trigger the result defined by the following
+// When sets expectation for the UserService.delete which will trigger the result defined by the following
 // Then helper
 func (mmDelete *mUserServiceMockDelete) When(ctx context.Context, id int64) *UserServiceMockDeleteExpectation {
 	if mmDelete.mock.funcDelete != nil {
-		mmDelete.mock.t.Fatalf("UserServiceMock.Delete mock is already set by Set")
+		mmDelete.mock.t.Fatalf("UserServiceMock.delete mock is already set by Set")
 	}
 
 	expectation := &UserServiceMockDeleteExpectation{
@@ -399,7 +399,7 @@ func (mmDelete *mUserServiceMockDelete) When(ctx context.Context, id int64) *Use
 	return expectation
 }
 
-// Then sets up UserService.Delete return parameters for the expectation previously defined by the When method
+// Then sets up UserService.delete return parameters for the expectation previously defined by the When method
 func (e *UserServiceMockDeleteExpectation) Then(ep1 *emptypb.Empty, err error) *UserServiceMock {
 	e.results = &UserServiceMockDeleteResults{ep1, err}
 	return e.mock
@@ -433,19 +433,19 @@ func (mmDelete *UserServiceMock) Delete(ctx context.Context, id int64) (ep1 *emp
 		mm_want := mmDelete.DeleteMock.defaultExpectation.params
 		mm_got := UserServiceMockDeleteParams{ctx, id}
 		if mm_want != nil && !minimock.Equal(*mm_want, mm_got) {
-			mmDelete.t.Errorf("UserServiceMock.Delete got unexpected parameters, want: %#v, got: %#v%s\n", *mm_want, mm_got, minimock.Diff(*mm_want, mm_got))
+			mmDelete.t.Errorf("UserServiceMock.delete got unexpected parameters, want: %#v, got: %#v%s\n", *mm_want, mm_got, minimock.Diff(*mm_want, mm_got))
 		}
 
 		mm_results := mmDelete.DeleteMock.defaultExpectation.results
 		if mm_results == nil {
-			mmDelete.t.Fatal("No results are set for the UserServiceMock.Delete")
+			mmDelete.t.Fatal("No results are set for the UserServiceMock.delete")
 		}
 		return (*mm_results).ep1, (*mm_results).err
 	}
 	if mmDelete.funcDelete != nil {
 		return mmDelete.funcDelete(ctx, id)
 	}
-	mmDelete.t.Fatalf("Unexpected call to UserServiceMock.Delete. %v %v", ctx, id)
+	mmDelete.t.Fatalf("Unexpected call to UserServiceMock.delete. %v %v", ctx, id)
 	return
 }
 
@@ -496,21 +496,21 @@ func (m *UserServiceMock) MinimockDeleteDone() bool {
 func (m *UserServiceMock) MinimockDeleteInspect() {
 	for _, e := range m.DeleteMock.expectations {
 		if mm_atomic.LoadUint64(&e.Counter) < 1 {
-			m.t.Errorf("Expected call to UserServiceMock.Delete with params: %#v", *e.params)
+			m.t.Errorf("Expected call to UserServiceMock.delete with params: %#v", *e.params)
 		}
 	}
 
 	// if default expectation was set then invocations count should be greater than zero
 	if m.DeleteMock.defaultExpectation != nil && mm_atomic.LoadUint64(&m.afterDeleteCounter) < 1 {
 		if m.DeleteMock.defaultExpectation.params == nil {
-			m.t.Error("Expected call to UserServiceMock.Delete")
+			m.t.Error("Expected call to UserServiceMock.delete")
 		} else {
-			m.t.Errorf("Expected call to UserServiceMock.Delete with params: %#v", *m.DeleteMock.defaultExpectation.params)
+			m.t.Errorf("Expected call to UserServiceMock.delete with params: %#v", *m.DeleteMock.defaultExpectation.params)
 		}
 	}
 	// if func was set then invocations count should be greater than zero
 	if m.funcDelete != nil && mm_atomic.LoadUint64(&m.afterDeleteCounter) < 1 {
-		m.t.Error("Expected call to UserServiceMock.Delete")
+		m.t.Error("Expected call to UserServiceMock.delete")
 	}
 }
 
@@ -967,7 +967,7 @@ type UserServiceMockUpdateExpectation struct {
 // UserServiceMockUpdateParams contains parameters of the UserService.Update
 type UserServiceMockUpdateParams struct {
 	ctx context.Context
-	req *dto.UpdateRequest
+	req *dtoGrpcUser.UpdateRequest
 }
 
 // UserServiceMockUpdateResults contains results of the UserService.Update
@@ -977,7 +977,7 @@ type UserServiceMockUpdateResults struct {
 }
 
 // Expect sets up expected params for UserService.Update
-func (mmUpdate *mUserServiceMockUpdate) Expect(ctx context.Context, req *dto.UpdateRequest) *mUserServiceMockUpdate {
+func (mmUpdate *mUserServiceMockUpdate) Expect(ctx context.Context, req *dtoGrpcUser.UpdateRequest) *mUserServiceMockUpdate {
 	if mmUpdate.mock.funcUpdate != nil {
 		mmUpdate.mock.t.Fatalf("UserServiceMock.Update mock is already set by Set")
 	}
@@ -997,7 +997,7 @@ func (mmUpdate *mUserServiceMockUpdate) Expect(ctx context.Context, req *dto.Upd
 }
 
 // Inspect accepts an inspector function that has same arguments as the UserService.Update
-func (mmUpdate *mUserServiceMockUpdate) Inspect(f func(ctx context.Context, req *dto.UpdateRequest)) *mUserServiceMockUpdate {
+func (mmUpdate *mUserServiceMockUpdate) Inspect(f func(ctx context.Context, req *dtoGrpcUser.UpdateRequest)) *mUserServiceMockUpdate {
 	if mmUpdate.mock.inspectFuncUpdate != nil {
 		mmUpdate.mock.t.Fatalf("Inspect function is already set for UserServiceMock.Update")
 	}
@@ -1021,7 +1021,7 @@ func (mmUpdate *mUserServiceMockUpdate) Return(ep1 *emptypb.Empty, err error) *U
 }
 
 // Set uses given function f to mock the UserService.Update method
-func (mmUpdate *mUserServiceMockUpdate) Set(f func(ctx context.Context, req *dto.UpdateRequest) (ep1 *emptypb.Empty, err error)) *UserServiceMock {
+func (mmUpdate *mUserServiceMockUpdate) Set(f func(ctx context.Context, req *dtoGrpcUser.UpdateRequest) (ep1 *emptypb.Empty, err error)) *UserServiceMock {
 	if mmUpdate.defaultExpectation != nil {
 		mmUpdate.mock.t.Fatalf("Default expectation is already set for the UserService.Update method")
 	}
@@ -1036,7 +1036,7 @@ func (mmUpdate *mUserServiceMockUpdate) Set(f func(ctx context.Context, req *dto
 
 // When sets expectation for the UserService.Update which will trigger the result defined by the following
 // Then helper
-func (mmUpdate *mUserServiceMockUpdate) When(ctx context.Context, req *dto.UpdateRequest) *UserServiceMockUpdateExpectation {
+func (mmUpdate *mUserServiceMockUpdate) When(ctx context.Context, req *dtoGrpcUser.UpdateRequest) *UserServiceMockUpdateExpectation {
 	if mmUpdate.mock.funcUpdate != nil {
 		mmUpdate.mock.t.Fatalf("UserServiceMock.Update mock is already set by Set")
 	}
@@ -1056,7 +1056,7 @@ func (e *UserServiceMockUpdateExpectation) Then(ep1 *emptypb.Empty, err error) *
 }
 
 // Update implements service.UserService
-func (mmUpdate *UserServiceMock) Update(ctx context.Context, req *dto.UpdateRequest) (ep1 *emptypb.Empty, err error) {
+func (mmUpdate *UserServiceMock) Update(ctx context.Context, req *dtoGrpcUser.UpdateRequest) (ep1 *emptypb.Empty, err error) {
 	mm_atomic.AddUint64(&mmUpdate.beforeUpdateCounter, 1)
 	defer mm_atomic.AddUint64(&mmUpdate.afterUpdateCounter, 1)
 

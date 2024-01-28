@@ -18,9 +18,13 @@ func (h *Handler) InitRoutes() *gin.Engine {
 
 	api := router.Group("/api")
 	{
-		lists := api.Group("/users")
+		lists := api.Group("/user")
 		{
-			lists.GET("/all", h.getUsers)
+			lists.POST("/create", h.create)
+			lists.GET("/all", h.getAll)
+			lists.GET("/:id", h.getById)
+			lists.PUT("/update/:id", h.updateById)
+			lists.DELETE("/:id", h.deleteById)
 		}
 	}
 
