@@ -40,10 +40,13 @@ func (a *authService) Login(ctx context.Context, req authGrpcDto.LoginRequest) (
 		return "", errors.New("wrong password")
 	}
 
-	token, err := a.jwtService.GenerateRefreshToken(dto.JwtUserInfo{
-		Username: user.Name,
-		Role:     user.Role,
-	})
+	token, err := a.jwtService.GenerateRefreshToken(
+		ctx,
+		dto.JwtUserInfo{
+			Username: user.Name,
+			Role:     user.Role,
+		},
+	)
 	if err != nil {
 		return "", errors.New("failed to generate token")
 	}
@@ -51,16 +54,19 @@ func (a *authService) Login(ctx context.Context, req authGrpcDto.LoginRequest) (
 	return token, nil
 }
 
-func (a *authService) GetRefreshToken(_ context.Context, oldToken string) (string, error) {
-	claims, err := a.jwtService.VerifyRefreshToken(oldToken)
+func (a *authService) GetRefreshToken(ctx context.Context, oldToken string) (string, error) {
+	claims, err := a.jwtService.VerifyRefreshToken(ctx, oldToken)
 	if err != nil {
 		return "", status.Errorf(codes.Aborted, "invalid refresh token")
 	}
 
-	token, err := a.jwtService.GenerateRefreshToken(dto.JwtUserInfo{
-		Username: claims.Username,
-		Role:     claims.Role,
-	})
+	token, err := a.jwtService.GenerateRefreshToken(
+		ctx,
+		dto.JwtUserInfo{
+			Username: claims.Username,
+			Role:     claims.Role,
+		},
+	)
 	if err != nil {
 		return "", errors.New("failed to generate token")
 	}
@@ -68,16 +74,19 @@ func (a *authService) GetRefreshToken(_ context.Context, oldToken string) (strin
 	return token, nil
 }
 
-func (a *authService) GetAccessToken(_ context.Context, oldToken string) (string, error) {
-	claims, err := a.jwtService.VerifyRefreshToken(oldToken)
+func (a *authService) GetAccessToken(ctx context.Context, oldToken string) (string, error) {
+	claims, err := a.jwtService.VerifyRefreshToken(ctx, oldToken)
 	if err != nil {
 		return "", status.Errorf(codes.Aborted, "invalid refresh token")
 	}
 
-	token, err := a.jwtService.GenerateAccessToken(dto.JwtUserInfo{
-		Username: claims.Username,
-		Role:     claims.Role,
-	})
+	token, err := a.jwtService.GenerateAccessToken(
+		ctx,
+		dto.JwtUserInfo{
+			Username: claims.Username,
+			Role:     claims.Role,
+		},
+	)
 	if err != nil {
 		return "", errors.New("failed to generate token")
 	}

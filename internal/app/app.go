@@ -4,7 +4,8 @@ import (
 	"context"
 	"github.com/PerfilievAlexandr/auth/internal/api/grpc/interceptor"
 	"github.com/PerfilievAlexandr/auth/internal/config"
-	proto "github.com/PerfilievAlexandr/auth/pkg/auth_v1"
+	protoAccess "github.com/PerfilievAlexandr/auth/pkg/access_v1"
+	protoAuth "github.com/PerfilievAlexandr/auth/pkg/auth_v1"
 	"github.com/PerfilievAlexandr/platform_common/pkg/closer"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -46,7 +47,7 @@ func (a *App) Run(ctx context.Context) error {
 
 		err := a.runGrpcServer(ctx)
 		if err != nil {
-			log.Fatalf("failed to run GRPC grpcServer: %v", err)
+			log.Fatalf("failed to run GRPC grpcAuthServer: %v", err)
 		}
 	}()
 
@@ -55,7 +56,7 @@ func (a *App) Run(ctx context.Context) error {
 
 		err := a.runHttpServer(ctx)
 		if err != nil {
-			log.Fatalf("failed to run HTTP grpcServer: %v", err)
+			log.Fatalf("failed to run HTTP grpcAuthServer: %v", err)
 		}
 	}()
 
@@ -103,8 +104,8 @@ func (a *App) initGrpcServer(ctx context.Context) error {
 	)
 
 	reflection.Register(a.grpcServer)
-
-	proto.RegisterAuthV1Server(a.grpcServer, a.diProvider.GrpcServer(ctx))
+	protoAuth.RegisterAuthV1Server(a.grpcServer, a.diProvider.GrpcAuthServer(ctx))
+	protoAccess.RegisterAccessV1Server(a.grpcServer, a.diProvider.GrpcAccessServer(ctx))
 
 	return nil
 }

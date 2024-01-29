@@ -29,8 +29,12 @@ type AuthService interface {
 }
 
 type JwtService interface {
-	GenerateRefreshToken(info dto.JwtUserInfo) (string, error)
-	GenerateAccessToken(info dto.JwtUserInfo) (string, error)
-	VerifyRefreshToken(token string) (*dto.JwtClaims, error)
-	VerifyAccessToken(token string) (*dto.JwtClaims, error)
+	GenerateRefreshToken(ctx context.Context, info dto.JwtUserInfo) (string, error)
+	GenerateAccessToken(ctx context.Context, info dto.JwtUserInfo) (string, error)
+	VerifyRefreshToken(ctx context.Context, token string) (*dto.JwtClaims, error)
+	VerifyAccessToken(ctx context.Context, token string) (*dto.JwtClaims, error)
+}
+
+type AccessService interface {
+	Check(ctx context.Context, endpointAddress string) error
 }

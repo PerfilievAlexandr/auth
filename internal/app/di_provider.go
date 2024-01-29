@@ -2,12 +2,14 @@ package app
 
 import (
 	"context"
+	"github.com/PerfilievAlexandr/auth/internal/api/grpc/access"
 	"github.com/PerfilievAlexandr/auth/internal/api/grpc/auth"
 	"github.com/PerfilievAlexandr/auth/internal/api/http"
 	"github.com/PerfilievAlexandr/auth/internal/config"
 	"github.com/PerfilievAlexandr/auth/internal/repository"
 	userRepository "github.com/PerfilievAlexandr/auth/internal/repository/user"
 	"github.com/PerfilievAlexandr/auth/internal/service"
+	accessService "github.com/PerfilievAlexandr/auth/internal/service/access"
 	authService "github.com/PerfilievAlexandr/auth/internal/service/auth"
 	jwtService "github.com/PerfilievAlexandr/auth/internal/service/jwt"
 	"github.com/PerfilievAlexandr/auth/internal/service/password"
@@ -20,16 +22,18 @@ import (
 )
 
 type diProvider struct {
-	config          *config.Config
-	db              db.Client
-	txManager       db.TxManager
-	userRepository  repository.UserRepository
-	userService     service.UserService
-	authService     service.AuthService
-	jwtService      service.JwtService
-	passwordService service.PasswordService
-	grpcServer      *auth.Server
-	httpHandler     *http.Handler
+	config           *config.Config
+	db               db.Client
+	txManager        db.TxManager
+	userRepository   repository.UserRepository
+	userService      service.UserService
+	accessService    service.AccessService
+	authService      service.AuthService
+	jwtService       service.JwtService
+	passwordService  service.PasswordService
+	grpcAuthServer   *auth.Server
+	grpcAccessServer *access.Server
+	httpHandler      *http.Handler
 }
 
 func newProvider() *diProvider {
@@ -109,6 +113,16 @@ func (s *diProvider) PasswordService(_ context.Context) service.PasswordService 
 	return s.passwordService
 }
 
+func (s *diProvider) AccessService(ctx context.Context) service.AccessService {
+	if s.accessService == nil {
+		s.accessService = accessService.NewAccessService(
+			s.JwtService(ctx),
+		)
+	}
+
+	return s.accessService
+}
+
 func (s *diProvider) AuthService(ctx context.Context) service.AuthService {
 	if s.authService == nil {
 		s.authService = authService.NewAuthService(
@@ -131,12 +145,20 @@ func (s *diProvider) JwtService(ctx context.Context) service.JwtService {
 	return s.jwtService
 }
 
-func (s *diProvider) GrpcServer(ctx context.Context) *auth.Server {
-	if s.grpcServer == nil {
-		s.grpcServer = auth.NewImplementation(s.AuthService(ctx))
+func (s *diProvider) GrpcAuthServer(ctx context.Context) *auth.Server {
+	if s.grpcAuthServer == nil {
+		s.grpcAuthServer = auth.NewImplementation(s.AuthService(ctx))
 	}
 
-	return s.grpcServer
+	return s.grpcAuthServer
+}
+
+func (s *diProvider) GrpcAccessServer(ctx context.Context) *access.Server {
+	if s.grpcAccessServer == nil {
+		s.grpcAccessServer = access.NewImplementation(s.AccessService(ctx))
+	}
+
+	return s.grpcAccessServer
 }
 
 func (s *diProvider) HttpHandler(ctx context.Context) *http.Handler {

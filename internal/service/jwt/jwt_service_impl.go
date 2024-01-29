@@ -1,6 +1,7 @@
 package jwtService
 
 import (
+	"context"
 	"github.com/PerfilievAlexandr/auth/internal/config"
 	"github.com/PerfilievAlexandr/auth/internal/dto"
 	"github.com/PerfilievAlexandr/auth/internal/service"
@@ -21,15 +22,15 @@ func NewJwtService(
 	}
 }
 
-func (j *jwtService) GenerateRefreshToken(info dto.JwtUserInfo) (string, error) {
-	return j.generateToken(info, j.config.JwtConfig.RefreshTokenExpirationMinutes(), j.config.JwtConfig.RefreshTokenSecret())
+func (j *jwtService) GenerateRefreshToken(ctx context.Context, info dto.JwtUserInfo) (string, error) {
+	return j.generateToken(ctx, info, j.config.JwtConfig.RefreshTokenExpirationMinutes(), j.config.JwtConfig.RefreshTokenSecret())
 }
 
-func (j *jwtService) GenerateAccessToken(info dto.JwtUserInfo) (string, error) {
-	return j.generateToken(info, j.config.JwtConfig.AccessTokenExpirationMinutes(), j.config.JwtConfig.AccessTokenSecret())
+func (j *jwtService) GenerateAccessToken(ctx context.Context, info dto.JwtUserInfo) (string, error) {
+	return j.generateToken(ctx, info, j.config.JwtConfig.AccessTokenExpirationMinutes(), j.config.JwtConfig.AccessTokenSecret())
 }
 
-func (j *jwtService) generateToken(info dto.JwtUserInfo, expireTime time.Duration, secret string) (string, error) {
+func (j *jwtService) generateToken(_ context.Context, info dto.JwtUserInfo, expireTime time.Duration, secret string) (string, error) {
 	claims := dto.JwtClaims{
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(expireTime).Unix(),
@@ -43,15 +44,15 @@ func (j *jwtService) generateToken(info dto.JwtUserInfo, expireTime time.Duratio
 	return token.SignedString([]byte(secret))
 }
 
-func (j *jwtService) VerifyRefreshToken(token string) (*dto.JwtClaims, error) {
-	return j.verifyToken(token, j.config.JwtConfig.RefreshTokenSecret())
+func (j *jwtService) VerifyRefreshToken(ctx context.Context, token string) (*dto.JwtClaims, error) {
+	return j.verifyToken(ctx, token, j.config.JwtConfig.RefreshTokenSecret())
 }
 
-func (j *jwtService) VerifyAccessToken(token string) (*dto.JwtClaims, error) {
-	return j.verifyToken(token, j.config.JwtConfig.AccessTokenSecret())
+func (j *jwtService) VerifyAccessToken(ctx context.Context, token string) (*dto.JwtClaims, error) {
+	return j.verifyToken(ctx, token, j.config.JwtConfig.AccessTokenSecret())
 }
 
-func (j *jwtService) verifyToken(tokenStr string, secret string) (*dto.JwtClaims, error) {
+func (j *jwtService) verifyToken(_ context.Context, tokenStr string, secret string) (*dto.JwtClaims, error) {
 	token, err := jwt.ParseWithClaims(
 		tokenStr,
 		&dto.JwtClaims{},
