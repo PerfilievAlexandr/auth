@@ -6,6 +6,7 @@ import (
 	"github.com/PerfilievAlexandr/auth/internal/api/grpc/auth"
 	"github.com/PerfilievAlexandr/auth/internal/api/http"
 	"github.com/PerfilievAlexandr/auth/internal/config"
+	"github.com/PerfilievAlexandr/auth/internal/logger"
 	"github.com/PerfilievAlexandr/auth/internal/repository"
 	userRepository "github.com/PerfilievAlexandr/auth/internal/repository/user"
 	"github.com/PerfilievAlexandr/auth/internal/service"
@@ -18,7 +19,7 @@ import (
 	"github.com/PerfilievAlexandr/platform_common/pkg/db"
 	"github.com/PerfilievAlexandr/platform_common/pkg/db/pg"
 	"github.com/PerfilievAlexandr/platform_common/pkg/db/transaction"
-	"log"
+	"go.uber.org/zap"
 )
 
 type diProvider struct {
@@ -44,7 +45,7 @@ func (s *diProvider) Config(ctx context.Context) *config.Config {
 	if s.config == nil {
 		cfg, err := config.NewConfig(ctx)
 		if err != nil {
-			log.Fatalf("failed to get pg config: %s", err.Error())
+			logger.Fatal("failed to get pg config", zap.Any("err", err))
 		}
 
 		s.config = cfg
@@ -58,12 +59,12 @@ func (s *diProvider) DbClient(ctx context.Context) db.Client {
 
 		dbPool, err := pg.New(ctx, s.Config(ctx).DbConfig.ConnectString())
 		if err != nil {
-			log.Fatalf("failed to connect to database: %v", err)
+			logger.Fatal("failed to connect to database", zap.Any("err", err))
 		}
 
 		err = dbPool.Ping(ctx)
 		if err != nil {
-			log.Fatalf("failed to connect to database: %v", err)
+			logger.Fatal("failed to ping database", zap.Any("err", err))
 		}
 
 		closer.Add(func() error {

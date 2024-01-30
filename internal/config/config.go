@@ -7,8 +7,9 @@ import (
 	httpConfig "github.com/PerfilievAlexandr/auth/internal/config/http"
 	configInterface "github.com/PerfilievAlexandr/auth/internal/config/interface"
 	jwtConfig "github.com/PerfilievAlexandr/auth/internal/config/jwt"
+	"github.com/PerfilievAlexandr/auth/internal/logger"
 	"github.com/joho/godotenv"
-	"log"
+	"go.uber.org/zap"
 )
 
 type Config struct {
@@ -21,19 +22,19 @@ type Config struct {
 func NewConfig(_ context.Context) (*Config, error) {
 	dbCfg, err := dbConfig.NewDbConfig()
 	if err != nil {
-		log.Fatalf("failed to config: %s", err.Error())
+		logger.Fatal("failed to config", zap.Any("err", err))
 	}
 	grpcCfg, err := grpcConfig.NewGRPCConfig()
 	if err != nil {
-		log.Fatalf("failed to config: %s", err.Error())
+		logger.Fatal("failed to config", zap.Any("err", err))
 	}
 	httpCfg, err := httpConfig.NewHttpConfig()
 	if err != nil {
-		log.Fatalf("failed to config: %s", err.Error())
+		logger.Fatal("failed to config", zap.Any("err", err))
 	}
 	jwtCfg, err := jwtConfig.NewJwtConfig()
 	if err != nil {
-		log.Fatalf("failed to config: %s", err.Error())
+		logger.Fatal("failed to config", zap.Any("err", err))
 	}
 
 	return &Config{

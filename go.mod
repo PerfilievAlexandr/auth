@@ -4,15 +4,18 @@ go 1.22rc1
 
 require (
 	github.com/PerfilievAlexandr/platform_common v1.0.2
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/envoyproxy/protoc-gen-validate v1.0.2
 	github.com/gin-gonic/gin v1.9.1
 	github.com/gojuno/minimock/v3 v3.3.6
+	github.com/grpc-ecosystem/go-grpc-middleware v1.4.0
 	github.com/joho/godotenv v1.5.1
 	github.com/pkg/errors v0.9.1
 	github.com/stretchr/testify v1.8.3
+	go.uber.org/zap v1.26.0
+	golang.org/x/crypto v0.14.0
 	google.golang.org/grpc v1.60.1
 	google.golang.org/protobuf v1.32.0
-	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 )
 
 require (
@@ -46,8 +49,8 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.11 // indirect
+	go.uber.org/multierr v1.10.0 // indirect
 	golang.org/x/arch v0.3.0 // indirect
-	golang.org/x/crypto v0.14.0 // indirect
 	golang.org/x/net v0.16.0 // indirect
 	golang.org/x/sys v0.13.0 // indirect
 	golang.org/x/text v0.13.0 // indirect
