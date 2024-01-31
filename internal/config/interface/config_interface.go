@@ -20,3 +20,7 @@ type JwtConfig interface {
 	RefreshTokenExpirationMinutes() time.Duration
 	AccessTokenExpirationMinutes() time.Duration
 }
+
+type PrometheusServerConfig interface {
+	Address() string
+}

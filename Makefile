@@ -54,3 +54,13 @@ vendor-proto:
 			mv vendor.protogen/protoc-gen-validate/validate/*.proto vendor.protogen/validate &&\
 			rm -rf vendor.protogen/protoc-gen-validate ;\
 		fi
+
+grpc-load-test:
+	ghz \
+		--proto api/access_v1/access.proto \
+		--call access_v1.AccessV1.Check \
+		--data '{"endpoint_address": "test"}' \
+		--rps 100 \
+		--total 3000 \
+		--insecure \
+		$(GRPC_HOST):$(GRPC_PORT)
