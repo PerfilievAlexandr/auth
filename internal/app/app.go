@@ -6,10 +6,13 @@ import (
 	"github.com/PerfilievAlexandr/auth/internal/config"
 	"github.com/PerfilievAlexandr/auth/internal/logger"
 	"github.com/PerfilievAlexandr/auth/internal/metrics"
+	"github.com/PerfilievAlexandr/auth/internal/tracing"
 	protoAccess "github.com/PerfilievAlexandr/auth/pkg/access_v1"
 	protoAuth "github.com/PerfilievAlexandr/auth/pkg/auth_v1"
 	"github.com/PerfilievAlexandr/platform_common/pkg/closer"
 	grpcMiddleware "github.com/grpc-ecosystem/go-grpc-middleware"
+	"github.com/grpc-ecosystem/grpc-opentracing/go/otgrpc"
+	"github.com/opentracing/opentracing-go"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -84,6 +87,7 @@ func (a *App) Run(ctx context.Context) error {
 func (a *App) initDeps(ctx context.Context) error {
 	inits := []func(context.Context) error{
 		a.initLogger,
+		a.initTrace,
 		a.initConfig,
 		a.initProvider,
 		a.initGrpcServer,
@@ -123,6 +127,7 @@ func (a *App) initGrpcServer(ctx context.Context) error {
 				interceptor.ValidateInterceptor,
 				interceptor.LogInterceptor,
 				interceptor.MetricsInterceptor,
+				otgrpc.OpenTracingServerInterceptor(opentracing.GlobalTracer()),
 			),
 		),
 	)
@@ -201,6 +206,12 @@ func (a *App) runPrometheus(_ context.Context) error {
 	if err != nil {
 		return err
 	}
+
+	return nil
+}
+
+func (a *App) initTrace(_ context.Context) error {
+	tracing.Init(logger.Logger(), "auth")
 
 	return nil
 }
