@@ -15,6 +15,7 @@ import (
 	"github.com/grpc-ecosystem/grpc-opentracing/go/otgrpc"
 	"github.com/opentracing/opentracing-go"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/sony/gobreaker"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"google.golang.org/grpc"
@@ -123,12 +124,25 @@ func (a *App) initProvider(_ context.Context) error {
 
 func (a *App) initGrpcServer(ctx context.Context) error {
 	limiter := rateLimiter.NewTokenBucketLimiter(ctx, 100, time.Second)
+	circuitBreaker := gobreaker.NewCircuitBreaker(gobreaker.Settings{
+		Name:        "auth-service",
+		MaxRequests: 3,
+		Timeout:     5 * time.Second,
+		ReadyToTrip: func(counts gobreaker.Counts) bool {
+			failureRatio := float64(counts.TotalFailures) / float64(counts.Requests)
+			return failureRatio >= 0.5
+		},
+		OnStateChange: func(name string, from gobreaker.State, to gobreaker.State) {
+			logger.Info("Circuit Breaker: %s, changed from %v, to %v\n", zap.String("name", name), zap.Any("changed from", from), zap.Any("changed to", to))
+		},
+	})
 
 	a.grpcServer = grpc.NewServer(
 		grpc.Creds(insecure.NewCredentials()),
 		grpc.UnaryInterceptor(
 			grpcMiddleware.ChainUnaryServer(
 				interceptor.NewRateLimiterInterceptor(limiter).Unary,
+				interceptor.NewCircuitBreakerInterceptor(circuitBreaker).Unary,
 				interceptor.ValidateInterceptor,
 				interceptor.LogInterceptor,
 				interceptor.MetricsInterceptor,

@@ -14,6 +14,7 @@ require (
 	github.com/opentracing/opentracing-go v1.1.0
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.16.0
+	github.com/sony/gobreaker v0.5.0
 	github.com/stretchr/testify v1.8.3
 	github.com/uber/jaeger-client-go v2.30.0+incompatible
 	go.uber.org/zap v1.26.0
