@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/PerfilievAlexandr/auth/internal/api/grpc/interceptor"
 	"github.com/PerfilievAlexandr/auth/internal/config"
+	rateLimiter "github.com/PerfilievAlexandr/auth/internal/helpers/rate_limiter"
 	"github.com/PerfilievAlexandr/auth/internal/logger"
 	"github.com/PerfilievAlexandr/auth/internal/metrics"
 	"github.com/PerfilievAlexandr/auth/internal/tracing"
@@ -23,6 +24,7 @@ import (
 	"net/http"
 	"os"
 	"sync"
+	"time"
 )
 
 type App struct {
@@ -120,10 +122,13 @@ func (a *App) initProvider(_ context.Context) error {
 }
 
 func (a *App) initGrpcServer(ctx context.Context) error {
+	limiter := rateLimiter.NewTokenBucketLimiter(ctx, 100, time.Second)
+
 	a.grpcServer = grpc.NewServer(
 		grpc.Creds(insecure.NewCredentials()),
 		grpc.UnaryInterceptor(
 			grpcMiddleware.ChainUnaryServer(
+				interceptor.NewRateLimiterInterceptor(limiter).Unary,
 				interceptor.ValidateInterceptor,
 				interceptor.LogInterceptor,
 				interceptor.MetricsInterceptor,

@@ -60,7 +60,7 @@ grpc-load-test:
 		--proto api/access_v1/access.proto \
 		--call access_v1.AccessV1.Check \
 		--data '{"endpoint_address": "test"}' \
-		--rps 100 \
+		--rps 200 \
 		--total 3000 \
 		--insecure \
 		$(GRPC_HOST):$(GRPC_PORT)
