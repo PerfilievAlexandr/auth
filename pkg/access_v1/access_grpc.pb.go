@@ -23,7 +23,7 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AccessV1Client interface {
-	Check(ctx context.Context, in *CheckRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	Check(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*ClaimsResponse, error)
 }
 
 type accessV1Client struct {
@@ -34,8 +34,8 @@ func NewAccessV1Client(cc grpc.ClientConnInterface) AccessV1Client {
 	return &accessV1Client{cc}
 }
 
-func (c *accessV1Client) Check(ctx context.Context, in *CheckRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
-	out := new(emptypb.Empty)
+func (c *accessV1Client) Check(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*ClaimsResponse, error) {
+	out := new(ClaimsResponse)
 	err := c.cc.Invoke(ctx, "/access_v1.AccessV1/Check", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -47,7 +47,7 @@ func (c *accessV1Client) Check(ctx context.Context, in *CheckRequest, opts ...gr
 // All implementations must embed UnimplementedAccessV1Server
 // for forward compatibility
 type AccessV1Server interface {
-	Check(context.Context, *CheckRequest) (*emptypb.Empty, error)
+	Check(context.Context, *emptypb.Empty) (*ClaimsResponse, error)
 	mustEmbedUnimplementedAccessV1Server()
 }
 
@@ -55,7 +55,7 @@ type AccessV1Server interface {
 type UnimplementedAccessV1Server struct {
 }
 
-func (UnimplementedAccessV1Server) Check(context.Context, *CheckRequest) (*emptypb.Empty, error) {
+func (UnimplementedAccessV1Server) Check(context.Context, *emptypb.Empty) (*ClaimsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Check not implemented")
 }
 func (UnimplementedAccessV1Server) mustEmbedUnimplementedAccessV1Server() {}
@@ -72,7 +72,7 @@ func RegisterAccessV1Server(s grpc.ServiceRegistrar, srv AccessV1Server) {
 }
 
 func _AccessV1_Check_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CheckRequest)
+	in := new(emptypb.Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -84,7 +84,7 @@ func _AccessV1_Check_Handler(srv interface{}, ctx context.Context, dec func(inte
 		FullMethod: "/access_v1.AccessV1/Check",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccessV1Server).Check(ctx, req.(*CheckRequest))
+		return srv.(AccessV1Server).Check(ctx, req.(*emptypb.Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }

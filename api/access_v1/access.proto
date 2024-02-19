@@ -7,9 +7,10 @@ import "google/protobuf/empty.proto";
 option go_package = "github.com/PerfilievAlexandr/auth/internal/api/grpc/access_v1;access_v1";
 
 service AccessV1 {
-  rpc Check(CheckRequest) returns (google.protobuf.Empty);
+  rpc Check(google.protobuf.Empty) returns (ClaimsResponse);
 }
 
-message CheckRequest {
-  string endpoint_address = 1;
+message ClaimsResponse {
+  string username = 1;
+  string role = 2;
 }

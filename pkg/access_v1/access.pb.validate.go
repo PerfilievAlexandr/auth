@@ -35,43 +35,46 @@ var (
 	_ = sort.Sort
 )
 
-// Validate checks the field values on CheckRequest with the rules defined in
+// Validate checks the field values on ClaimsResponse with the rules defined in
 // the proto definition for this message. If any rules are violated, the first
 // error encountered is returned, or nil if there are no violations.
-func (m *CheckRequest) Validate() error {
+func (m *ClaimsResponse) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on CheckRequest with the rules defined
+// ValidateAll checks the field values on ClaimsResponse with the rules defined
 // in the proto definition for this message. If any rules are violated, the
-// result is a list of violation errors wrapped in CheckRequestMultiError, or
-// nil if none found.
-func (m *CheckRequest) ValidateAll() error {
+// result is a list of violation errors wrapped in ClaimsResponseMultiError,
+// or nil if none found.
+func (m *ClaimsResponse) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *CheckRequest) validate(all bool) error {
+func (m *ClaimsResponse) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
 	var errors []error
 
-	// no validation rules for EndpointAddress
+	// no validation rules for Username
+
+	// no validation rules for Role
 
 	if len(errors) > 0 {
-		return CheckRequestMultiError(errors)
+		return ClaimsResponseMultiError(errors)
 	}
 
 	return nil
 }
 
-// CheckRequestMultiError is an error wrapping multiple validation errors
-// returned by CheckRequest.ValidateAll() if the designated constraints aren't met.
-type CheckRequestMultiError []error
+// ClaimsResponseMultiError is an error wrapping multiple validation errors
+// returned by ClaimsResponse.ValidateAll() if the designated constraints
+// aren't met.
+type ClaimsResponseMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m CheckRequestMultiError) Error() string {
+func (m ClaimsResponseMultiError) Error() string {
 	var msgs []string
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -80,11 +83,11 @@ func (m CheckRequestMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m CheckRequestMultiError) AllErrors() []error { return m }
+func (m ClaimsResponseMultiError) AllErrors() []error { return m }
 
-// CheckRequestValidationError is the validation error returned by
-// CheckRequest.Validate if the designated constraints aren't met.
-type CheckRequestValidationError struct {
+// ClaimsResponseValidationError is the validation error returned by
+// ClaimsResponse.Validate if the designated constraints aren't met.
+type ClaimsResponseValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -92,22 +95,22 @@ type CheckRequestValidationError struct {
 }
 
 // Field function returns field value.
-func (e CheckRequestValidationError) Field() string { return e.field }
+func (e ClaimsResponseValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e CheckRequestValidationError) Reason() string { return e.reason }
+func (e ClaimsResponseValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e CheckRequestValidationError) Cause() error { return e.cause }
+func (e ClaimsResponseValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e CheckRequestValidationError) Key() bool { return e.key }
+func (e ClaimsResponseValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e CheckRequestValidationError) ErrorName() string { return "CheckRequestValidationError" }
+func (e ClaimsResponseValidationError) ErrorName() string { return "ClaimsResponseValidationError" }
 
 // Error satisfies the builtin error interface
-func (e CheckRequestValidationError) Error() string {
+func (e ClaimsResponseValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -119,14 +122,14 @@ func (e CheckRequestValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sCheckRequest.%s: %s%s",
+		"invalid %sClaimsResponse.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = CheckRequestValidationError{}
+var _ error = ClaimsResponseValidationError{}
 
 var _ interface {
 	Field() string
@@ -134,4 +137,4 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = CheckRequestValidationError{}
+} = ClaimsResponseValidationError{}

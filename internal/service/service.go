@@ -36,5 +36,5 @@ type JwtService interface {
 }
 
 type AccessService interface {
-	Check(ctx context.Context, endpointAddress string) error
+	Check(ctx context.Context) (*dto.JwtClaims, error)
 }

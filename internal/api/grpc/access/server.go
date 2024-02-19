@@ -18,12 +18,12 @@ func NewImplementation(accessService service.AccessService) *Server {
 	}
 }
 
-func (s *Server) Check(ctx context.Context, req *proto.CheckRequest) (*emptypb.Empty, error) {
-	err := s.accessService.Check(ctx, req.EndpointAddress)
+func (s *Server) Check(ctx context.Context, _ *emptypb.Empty) (*proto.ClaimsResponse, error) {
+	claims, err := s.accessService.Check(ctx)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return &emptypb.Empty{}, nil
+	return &proto.ClaimsResponse{Username: claims.Username, Role: claims.Role}, nil
 }
